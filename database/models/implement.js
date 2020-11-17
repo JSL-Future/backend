@@ -1,6 +1,5 @@
 const mongoose = require('mongoose')
 const _db = require('../')
-const { set } = require('../..')
 
 const UserSchema = new mongoose.Schema({
   active: {
@@ -16,7 +15,15 @@ const UserSchema = new mongoose.Schema({
     type: String,
     required: [true, "field required!"],
   },
+  operation: {
+    type: String,
+    required: [true, "field required!"],
+  },
   fleet: {
+    type: String,
+    required: [true, "field required!"],
+  },
+  reason: {
     type: String,
     required: [true, "field required!"],
   },
@@ -25,6 +32,8 @@ const UserSchema = new mongoose.Schema({
       status: {
         type: String,
         enum: ['check-in', 'check-out'],
+        required: [true, "field required!"],
+        default: 'check-in',
       },
       responsible: {
         type: String,

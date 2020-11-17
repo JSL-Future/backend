@@ -29,6 +29,7 @@ const getById = async (req, res, next) => {
 }
 
 const getAll = async (req, res, next) => {
+  // const plate = req.params
   try {
     const response = await FleetModel.find({})
     res.json(response)
