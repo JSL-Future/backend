@@ -44,6 +44,10 @@ const UserSchema = new mongoose.Schema({
         required: [true, "field required!"],
         default: new Date(),
       },
+      createdBy: {
+        type: String,
+        required: [true, "field required!"],
+      },
       userId: {
         type: String,
         required: [true, "field required!"],

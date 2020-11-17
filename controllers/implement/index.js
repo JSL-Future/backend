@@ -7,7 +7,7 @@ const ImplementModel = require('../../database/models/implement')
 
 const create = async (req, res, next) => {
   const plate = pathOr('', ['body', 'plate'], req)
-  const user = { name: 'Alexandre Soares', _id: '123456789' }
+  const user = req.decoded.user
 
   const formattedImplement = {
     operation: prop('operation', req.body),
@@ -41,7 +41,7 @@ const create = async (req, res, next) => {
 
 const update = async (req, res, next) => {
   const query = { _id: req.params.id, active: true }
-  const user = { name: 'Alexandre Soares', _id: '123456789' }
+  const user = req.decoded.user
 
   const implementData = {
     active: false,
@@ -51,7 +51,6 @@ const update = async (req, res, next) => {
     $addToSet: {
       events: [{
         responsible: propOr(user.name, 'responsible', req.body),
-        responsible: prop('responsible', req.body),
         userId: prop('_id', user),
         createdBy: prop('name', user),
         updatedBy: prop('name', user),

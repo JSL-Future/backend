@@ -1,9 +1,9 @@
-const fleetController = require('./fleet')
+const AuthenticationController = require('./authentication')
 const userController = require('./user')
 const implementController = require('./implement')
 
 module.exports = {
-  fleetController,
+  AuthenticationController,
   userController,
   implementController,
 }
