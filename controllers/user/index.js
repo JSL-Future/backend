@@ -9,7 +9,7 @@ const create = async (req, res, next) => {
     const response = await user.save()
     res.json(response)
   } catch (error) {
-    res.json(error)
+    res.status(400).json({ errors: [{ error: error.name, message: error.message }] })
   }
 }
 
@@ -27,7 +27,7 @@ const update = async (req, res, next) => {
 
     res.json(response)
   } catch (error) {
-    res.json(error)
+    res.status(400).json({ errors: [{ error: error.name, message: error.message }] })
   }
 }
 
@@ -36,7 +36,7 @@ const getById = async (req, res, next) => {
     const response = await UserModel.findById(req.params.id)
     res.json(response)
   } catch (error) {
-    res.json(error)
+    res.status(400).json({ errors: [{ error: error.name, message: error.message }] })
   }
 }
 

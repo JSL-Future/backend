@@ -2,7 +2,7 @@ const { compare } = require('bcrypt')
 const jwt = require('jsonwebtoken')
 const UserModel = require('../../database/models/user')
 
-const secret =  'bacon com café!'
+const secret = process.env.SECRET
 
 const authentication = async (req, res, next) => {
  try {

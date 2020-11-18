@@ -20,5 +20,4 @@ app.use(baseUrl, AuthenticationController.checkToken)
 app.use(baseUrl, implementRoutes)
 app.use(baseUrl, userRoutes)
 
-app.listen(3003, () => console.log('running...'))
 module.exports = app

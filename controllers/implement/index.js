@@ -35,7 +35,7 @@ const create = async (req, res, next) => {
     const response = await implement.save()
     res.json(response)
   } catch (error) {
-    res.json({ errors: [{ error: error.name, message: error.message }] })
+    res.status(400).json({ errors: [{ error: error.name, message: error.message }] })
   }
 }
 
@@ -68,7 +68,7 @@ const update = async (req, res, next) => {
 
     res.json(response)
   } catch (error) {
-    res.json(error)
+     res.status(400).json({ errors: [{ error: error.name, message: error.message }] })
   }
 }
 
@@ -77,7 +77,7 @@ const getById = async (req, res, next) => {
     const response = await ImplementModel.findById(req.params.id)
     res.json(response)
   } catch (error) {
-    res.json(error)
+     res.status(400).json({ errors: [{ error: error.name, message: error.message }] })
   }
 }
 
@@ -86,7 +86,7 @@ const getAll = async (req, res, next) => {
     const response = await ImplementModel.find({})
     res.json(response)
   } catch (error) {
-    res.json(error)
+    res.status(400).json({ errors: [{ error: error.name, message: error.message }] })
   }
 }
 
