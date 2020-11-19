@@ -1,3 +1,4 @@
+require('dotenv').config()
 const Express = require('express')
 const bodyParser = require('body-parser')
 const cors = require('cors')
@@ -15,8 +16,8 @@ app.use(cors())
 app.use(bodyParser.json())
 app.use(bodyParser.urlencoded({ extended: true }))
 
-app.use('/auth', AuthenticationRoutes)
-app.use(baseUrl, AuthenticationController.checkToken)
+// app.use('/auth', AuthenticationRoutes)
+// app.use(baseUrl, AuthenticationController.checkToken)
 app.use(baseUrl, implementRoutes)
 app.use(baseUrl, userRoutes)
 
