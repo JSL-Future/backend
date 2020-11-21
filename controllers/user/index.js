@@ -1,42 +1,34 @@
 const { hash } = require('bcrypt')
-const UserModel = require('../../database/models/user')
+const database = require('../../database')
+const UserModel = database.model('user')
 
 const create = async (req, res, next) => {
   const password = await hash(req.body.password, 10)
-  const user = new UserModel({ ...req.body, password })
-
   try {
-    const response = await user.save()
+    const response = await UserModel.create({ ...req.body, password })
     res.json(response)
   } catch (error) {
-    res.status(400).json({ errors: [{ error: error.name, message: error.message }] })
+    res.status(400).json({ error })
   }
 }
 
 const update = async (req, res, next) => {
-  let response
   try {
-    if (req.body.password) {
-      const password = await hash(req.body.password, 10)
-      response = await UserModel.findOneAndUpdate(req.params.id, {
-        ...req.body, password,
-      }, { new: true })
-    } else {
-      response = await UserModel.findOneAndUpdate(req.params.id, req.body, { new: true })
-    }
-
+    const findUser = await UserModel.findByPk(req.params.id)
+    await findUser.update(req.body)
+    const response = await findUser.reload()
     res.json(response)
   } catch (error) {
-    res.status(400).json({ errors: [{ error: error.name, message: error.message }] })
+    res.status(400).json({ error })
   }
 }
 
 const getById = async (req, res, next) => {
   try {
-    const response = await UserModel.findById(req.params.id)
+    const response = await UserModel.findByPk(req.params.id)
     res.json(response)
   } catch (error) {
-    res.status(400).json({ errors: [{ error: error.name, message: error.message }] })
+    res.status(400).json({ error })
   }
 }
 

@@ -1,92 +1,88 @@
-const {
-  pathOr,
-  prop,
-  propOr,
-} = require('ramda')
-const ImplementModel = require('../../database/models/implement')
+const database = require('../../database')
+const ImplementModel = database.model('implement')
+const ImplementEventModel = database.model('implement_event')
+const UserModel = database.model('user')
+
+const include = [
+  ImplementEventModel,
+]
 
 const create = async (req, res, next) => {
-  const plate = pathOr('', ['body', 'plate'], req)
   const user = req.decoded.user
-
-  const formattedImplement = {
-    operation: prop('operation', req.body),
-    reason: prop('reason', req.body),
-    plate,
-    fleet: prop('fleet', req.body),
-    events: [{
-      responsible: prop('responsible', req.body),
-      userId: prop('_id', user),
-      createdBy: prop('name', user),
-      updatedBy: prop('name', user),
-    }],
-    createdBy: prop('name', user),
-    updatedBy: prop('name', user),
-  }
-
-  const implement = new ImplementModel(formattedImplement)
-
+  const transaction = await database.transaction()
+  const query =  { where: { plate: req.body.plate, active: true } }
   try {
-    const findImplement = await ImplementModel.find({ plate, active: true })
-    if (findImplement.length > 0) {
-      throw new Error(`Allow only one active implement to this plate: ${plate}`)
+
+    const findImplement = await ImplementModel.findOne(query)
+    if (findImplement) {
+      throw new Error(`Allow only one active implement to this plate: ${req.body.plate}`)
     }
 
-    const response = await implement.save()
-    res.json(response)
+    const implementCreated = await ImplementModel.create(req.body, { transaction })
+    await ImplementEventModel.create({
+      responsible: req.body.responsible,
+      userId: user.id,
+      implementId: implementCreated.id
+    }, { transaction })
+
+    await implementCreated.reload({
+      transaction,
+      include,
+    })
+
+    await transaction.commit()
+    res.json(implementCreated)
   } catch (error) {
+    await transaction.rollback()
     res.status(400).json({ errors: [{ error: error.name, message: error.message }] })
   }
 }
 
 const update = async (req, res, next) => {
-  const query = { _id: req.params.id, active: true }
+  const status = 'check-out'
   const user = req.decoded.user
-
-  const implementData = {
-    active: false,
-    status: prop('status', req.body),
-    updatedBy: prop('name', user),
-    updatedAt: new Date(),
-    $addToSet: {
-      events: [{
-        responsible: propOr(user.name, 'responsible', req.body),
-        userId: prop('_id', user),
-        createdBy: prop('name', user),
-        updatedBy: prop('name', user),
-        status: prop('status', req.body),
-      }],
-    },
-  }
-
+  const transaction = await database.transaction()
+  const query =  { where: { id: req.params.id, active: true, status: 'check-out' } }
   try {
-    const response = await ImplementModel.findOneAndUpdate(
-      query,
-      implementData,
-      { new: true }
-    )
 
-    res.json(response)
+    const findImplement = await ImplementModel.findOne(query)
+    await findImplement.update({ status, active: false }, { transaction })
+    await ImplementEventModel.create({
+      responsible: req.body.responsible || user.name,
+      status,
+      userId: user.id,
+      implementId: findImplement.id
+    }, { transaction })
+
+    await findImplement.reload({
+      transaction,
+      include,
+    })
+
+    await transaction.commit()
+    res.json(findImplement)
   } catch (error) {
-     res.status(400).json({ errors: [{ error: error.name, message: error.message }] })
+    await transaction.rollback()
+    res.status(400).json({ errors: [{ error: error.name, message: error.message }] })
   }
 }
 
+
 const getById = async (req, res, next) => {
   try {
-    const response = await ImplementModel.findById(req.params.id)
+    const response = await ImplementModel.findByPk(req.params.id, { include })
     res.json(response)
   } catch (error) {
-     res.status(400).json({ errors: [{ error: error.name, message: error.message }] })
+    res.status(400).json(error)
   }
 }
 
 const getAll = async (req, res, next) => {
   try {
-    const response = await ImplementModel.find({})
+    const response = await ImplementModel.findAll({ include })
     res.json(response)
   } catch (error) {
-    res.status(400).json({ errors: [{ error: error.name, message: error.message }] })
+    res.status(400).json(error)
   }
 }
 

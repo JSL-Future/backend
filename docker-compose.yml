@@ -1,0 +1,6 @@
+version: '2.1'
+services:
+  database:
+    image: postgres:9.6.5-alpine
+    ports:
+    - 5432:5432

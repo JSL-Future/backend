@@ -1,12 +1,13 @@
 const { compare } = require('bcrypt')
 const jwt = require('jsonwebtoken')
-const UserModel = require('../../database/models/user')
+const database = require('../../database')
+const UserModel = database.model('user')
 
 const secret = process.env.SECRET
 
 const authentication = async (req, res, next) => {
  try {
-  const user = await UserModel.findOne({ document: req.body.document })
+  const user = await UserModel.findOne({ where: { document: req.body.document } })
   const checkedPassword = await compare(req.body.password, user.password)
 
   if(!checkedPassword) {
