@@ -1,7 +1,6 @@
 const database = require('../../database')
 const ImplementModel = database.model('implement')
 const ImplementEventModel = database.model('implement_event')
-const UserModel = database.model('user')
 
 const include = [
   ImplementEventModel,

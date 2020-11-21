@@ -1,4 +1,3 @@
-require('dotenv').config()
 const Express = require('express')
 const bodyParser = require('body-parser')
 const cors = require('cors')
@@ -20,4 +19,5 @@ app.use(bodyParser.urlencoded({ extended: true }))
 // app.use(baseUrl, AuthenticationController.checkToken)
 app.use(baseUrl, implementRoutes)
 app.use(baseUrl, userRoutes)
-app.listen(process.env.PORT, () => console.log('run...'))
+
+module.exports = app
