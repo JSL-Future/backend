@@ -20,5 +20,4 @@ app.use(bodyParser.urlencoded({ extended: true }))
 // app.use(baseUrl, AuthenticationController.checkToken)
 app.use(baseUrl, implementRoutes)
 app.use(baseUrl, userRoutes)
-
-module.exports = app
+app.listen(process.env.PORT, () => console.log('run...'))
