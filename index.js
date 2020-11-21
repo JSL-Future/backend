@@ -21,5 +21,4 @@ app.use(bodyParser.urlencoded({ extended: true }))
 app.use(baseUrl, implementRoutes)
 app.use(baseUrl, userRoutes)
 
-app.listen(process.env.PORT, () => console.log('running...'))
-// module.exports = app
+module.exports = app
