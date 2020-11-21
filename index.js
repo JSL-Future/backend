@@ -20,5 +20,5 @@ app.use(bodyParser.urlencoded({ extended: true }))
 // app.use(baseUrl, AuthenticationController.checkToken)
 app.use(baseUrl, implementRoutes)
 app.use(baseUrl, userRoutes)
-app.listen(3003, () => console.log('foi bobo'))
+
 module.exports = app
