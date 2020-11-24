@@ -41,7 +41,7 @@ const update = async (req, res, next) => {
   const status = 'check-out'
   const user = req.decoded.user
   const transaction = await database.transaction()
-  const query =  { where: { id: req.params.id, active: true, status: 'check-out' } }
+  const query =  { where: { id: req.params.id, active: true, status: 'check-in' } }
   try {
 
     const findImplement = await ImplementModel.findOne(query)
