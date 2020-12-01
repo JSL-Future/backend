@@ -72,7 +72,7 @@ const create = async (req, res, next) => {
 const update = async (req, res, next) => {
   const transaction = await database.transaction()
   const priority = pathOr(null, ['body', 'priority'], req)
-  const status = pathOr('check-in', ['body', 'event'], req)
+  const status = pathOr(null, ['body', 'event'], req)
   const user = pathOr(null, ['decoded','user'], req)
   const implementId = pathOr(null, ['params', 'id'], req)
   const suplyData = suplySpec({...req.body, status })
@@ -80,7 +80,7 @@ const update = async (req, res, next) => {
   let dataFormmated = { status }
   try {
     const findImplement = await ImplementModel.findOne(query)
-    const findImplementEventModel = await ImplementEventModel.findOne({
+    const findImplementEventModel = status && await ImplementEventModel.findOne({
       where: {
         implementId,
         status,
