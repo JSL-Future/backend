@@ -167,8 +167,14 @@ const getById = async (req, res, next) => {
 }
 
 const getAll = async (req, res, next) => {
+  const reason = pathOr(null, ['query', 'reason'], req)
+  const query = (
+    reason
+      ? { where: { reason, active: true }, include, attributes }
+      : { include, attributes }
+  )
   try {
-    const response = await ImplementModel.findAll({ include, attributes })
+    const response = await ImplementModel.findAll(query)
     res.json(response)
   } catch (error) {
     res.status(400).json(error)
