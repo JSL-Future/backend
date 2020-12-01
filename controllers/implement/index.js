@@ -4,6 +4,7 @@ const ImplementModel = database.model('implement')
 const ImplementEventModel = database.model('implement_event')
 
 const suplySpec = applySpec({
+  status: path(['status']),
   fuel: pathOr(null, ['fuel']),
 	mileage: pathOr(null, ['mileage']),
 	pedometer: pathOr(null, ['pedometer']),
@@ -61,34 +62,54 @@ const create = async (req, res, next) => {
     res.json(implementCreated)
   } catch (error) {
     await transaction.rollback()
-    res.status(400).json({ errors: [{ error: error.name, message: error.message }] })
+    res.status(400).json({ errors: [{
+      error: error.name,
+      message: error.message,
+    }] })
   }
 }
 
 const update = async (req, res, next) => {
-  const priority = pathOr(null, ['body', 'priority'], req)
-  const status = pathOr(null, ['body', 'event'], req)
-  let dataFormmated = { status }
-  const user = pathOr(null, ['decoded','user'], req)
   const transaction = await database.transaction()
+  const priority = pathOr(null, ['body', 'priority'], req)
+  const status = pathOr('check-in', ['body', 'event'], req)
+  const user = pathOr(null, ['decoded','user'], req)
   const implementId = pathOr(null, ['params', 'id'], req)
-  const query =  { where: { id: implementId, active: true }, attributes }
-  const suplyData = suplySpec(req.body)
-
+  const suplyData = suplySpec({...req.body, status })
+  const query =  { where: { id: implementId }, attributes }
+  let dataFormmated = { status }
   try {
     const findImplement = await ImplementModel.findOne(query)
     const findImplementEventModel = await ImplementEventModel.findOne({
-      implementId,
-      status,
+      where: {
+        implementId,
+        status,
+      }
     })
 
-    if (
-        findImplementEventModel.status === 'check-out'
-        // || findImplementEventModel.status === 'check-in'
-      ) {
-      throw new Error('Allow only one status of type \'check-out\'')
+    if (!findImplement.active && findImplement.status === 'check-out') {
+        throw new Error(
+          `Implement is done!`
+        )
+      }
+
+    if (findImplementEventModel && findImplementEventModel.status === 'check-out') {
+      throw new Error(
+        `Allow only one status of type \'${findImplementEventModel.status}\'`
+      )
     }
 
+    if (findImplementEventModel && findImplementEventModel.status === 'check-in') {
+      throw new Error(
+        `Allow only one status of type \'${findImplementEventModel.status}\'`
+      )
+    }
+
+    if (findImplementEventModel && findImplementEventModel.status === 'suply') {
+      throw new Error(
+        `Allow only one status of type \'${findImplementEventModel.status}\'`
+      )
+    }
 
     if (status === 'suply') {
       for (let key in suplyData) {
@@ -97,23 +118,27 @@ const update = async (req, res, next) => {
         }
       }
 
-      dataFormmated = {
-        ...suplyData,
-        status: 'check-in',
-      }
+      dataFormmated = suplyData
     }
 
     if (priority) {
       dataFormmated = { priority }
     }
 
+    if (status === 'check-out') {
+      dataFormmated = { status, active: false }
+    }
+
     await findImplement.update(dataFormmated, { transaction, attributes })
-    await ImplementEventModel.create({
-      responsible: req.body.responsible || user.name,
-      status: 'check-in',
-      userId: user.id,
-      implementId
-    }, { transaction })
+
+    if (!priority) {
+      await ImplementEventModel.create({
+        responsible: req.body.responsible || user.name,
+        status,
+        userId: user.id,
+        implementId
+      }, { transaction })
+    }
 
     await findImplement.reload({
       transaction,
@@ -125,10 +150,12 @@ const update = async (req, res, next) => {
     res.json(findImplement)
   } catch (error) {
     await transaction.rollback()
-    res.status(400).json({ errors: [{ error: error.name, message: error.message }] })
+    res.status(400).json({ errors: [{
+      error: error.name,
+      message: error.message,
+    }] })
   }
 }
-
 
 const getById = async (req, res, next) => {
   try {

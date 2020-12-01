@@ -3,7 +3,7 @@ const Models = require('./models')
 
 const DB_USERNAME = 'postgres'
 const DB_HOST = 'localhost'
-const DB_NAME = 'postgres'
+const DB_NAME = 'jsl-postgres'
 const DB_PWD = 'postgres'
 
 let sequelize = null
@@ -22,9 +22,9 @@ if(DATABASE_URL) {
   })
 } else {
   sequelize = new Sequelize({
-    username: DB_NAME,
+    username: DB_USERNAME,
     password: DB_PWD,
-    database: DB_USERNAME,
+    database: DB_NAME,
     host: DB_HOST,
     dialect: 'postgres',
     logging: false,

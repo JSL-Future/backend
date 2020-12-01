@@ -17,6 +17,31 @@ const Implement = (sequelize) => {
       allowNull: false,
       defaultValue: 'check-in',
     },
+    priority: {
+      type: Sequelize.ENUM(['low', 'medium', 'high']),
+      allowNull: false,
+      defaultValue: 'medium',
+    },
+    fuel: {
+      type: Sequelize.STRING,
+      allowNull: true,
+    },
+    mileage: {
+      type: Sequelize.STRING,
+      allowNull: true,
+    },
+    pedometer: {
+      type: Sequelize.STRING,
+      allowNull: true,
+    },
+    totalLiters: {
+      type: Sequelize.STRING,
+      allowNull: true,
+    },
+    registrationDriver: {
+      type: Sequelize.STRING,
+      allowNull: true,
+    },
     plate: {
       type: Sequelize.STRING,
       allowNull: false,

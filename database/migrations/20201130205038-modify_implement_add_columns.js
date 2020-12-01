@@ -23,8 +23,9 @@ module.exports = {
       enumName: 'enum_implements_status'
     }),
     queryInterface.addColumn(tableName, 'priority', {
-      type: Sequelize.STRING,
-      allowNull: true,
+      type: Sequelize.ENUM(['low', 'medium', 'high']),
+      allowNull: false,
+      defaultValue: 'medium',
     }),
     queryInterface.addColumn(tableName, 'fuel', {
       type: Sequelize.STRING,
@@ -60,6 +61,7 @@ module.exports = {
       ],
       enumName: 'enum_implements_status'
     }),
+    queryInterface.removeColumn(tableName, 'priority'),
     queryInterface.removeColumn(tableName, 'registrationDriver'),
     queryInterface.removeColumn(tableName, 'totalLiters'),
     queryInterface.removeColumn(tableName, 'fuel'),
