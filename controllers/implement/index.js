@@ -170,8 +170,8 @@ const getAll = async (req, res, next) => {
   const reason = pathOr(null, ['query', 'reason'], req)
   const query = (
     reason
-      ? { where: { reason, active: true }, include, attributes }
-      : { include, attributes }
+      ? { where: { reason, active: true }, include, attributes, order: [['createdAt', 'DESC']] }
+      : { include, attributes, order: [['createdAt', 'DESC']] }
   )
   try {
     const response = await ImplementModel.findAll(query)
