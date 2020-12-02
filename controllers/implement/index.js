@@ -6,6 +6,7 @@ const {
   path,
   pathOr,
   pipe,
+  replace,
 } = require('ramda')
 const database = require('../../database')
 const ImplementModel = database.model('implement')
@@ -23,6 +24,7 @@ const suplySpec = applySpec({
 const toUpperCase = value => value.toUpperCase()
 const formattedField = propName => pipe(
   pathOr('', [propName]),
+  replace(/[^a-z0-9]/gi, ''),
   toUpperCase
 )
 
