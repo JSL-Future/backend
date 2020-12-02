@@ -1,4 +1,12 @@
-const { applySpec, pathOr, isEmpty, isNil, path } = require('ramda')
+const { Op } = require('sequelize')
+const {
+  applySpec,
+  isEmpty,
+  isNil,
+  path,
+  pathOr,
+  pipe,
+} = require('ramda')
 const database = require('../../database')
 const ImplementModel = database.model('implement')
 const ImplementEventModel = database.model('implement_event')
@@ -10,6 +18,20 @@ const suplySpec = applySpec({
 	pedometer: pathOr(null, ['pedometer']),
 	totalLiters: pathOr(null, ['totalLiters']),
   registrationDriver: pathOr(null, ['registrationDriver']),
+})
+
+const toUpperCase = value => value.toUpperCase()
+const formattedField = propName => pipe(
+  pathOr('', [propName]),
+  toUpperCase
+)
+
+const implementSpec = applySpec({
+  operation: path(['operation']),
+  reason: path(['reason']),
+	plate: formattedField('plate'),
+	fleet: formattedField('fleet'),
+	responsible: path(['responsible']),
 })
 
 const include = [
@@ -37,21 +59,22 @@ const attributes = [
 const create = async (req, res, next) => {
   const user = req.decoded.user
   const transaction = await database.transaction()
-  const query =  { where: { plate: req.body.plate, active: true } }
-  try {
+  const query =  { where: { plate: { [Op.iLike]: `%${req.body.plate}%` }, active: true } }
+  const implementParseData = implementSpec(req.body)
 
+  try {
     const findImplement = await ImplementModel.findOne(query)
     if (findImplement) {
-      throw new Error(`Allow only one active implement to this plate: ${req.body.plate}`)
+      throw new Error(`Allow only one active implement to this plate: ${toUpperCase(req.body.plate)}`)
     }
 
-    const implementCreated = await ImplementModel.create(req.body, { transaction })
+    const implementCreated = await ImplementModel.create(implementParseData, { transaction })
     await ImplementEventModel.create({
       responsible: req.body.responsible,
       userId: user.id,
       implementId: implementCreated.id
     }, { transaction })
-    console.log(implementCreated)
+
     await implementCreated.reload({
       transaction,
       include,
