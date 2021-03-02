@@ -7,10 +7,16 @@ const {
   pathOr,
   pipe,
   replace,
+  omit,
 } = require('ramda')
 const database = require('../../database')
 const ImplementModel = database.model('implement')
 const ImplementEventModel = database.model('implement_event')
+
+const  {
+  iLikeOperation,
+  removeFiledsNilOrEmpty,
+} = require('../../utils/search-tools')
 
 const suplySpec = applySpec({
   status: path(['status']),
@@ -20,6 +26,12 @@ const suplySpec = applySpec({
 	totalLiters: pathOr(null, ['totalLiters']),
   registrationDriver: pathOr(null, ['registrationDriver']),
 })
+
+const toBooleanValue = value => (
+  value === true || value === 'true'
+    ? true
+    : false
+)
 
 const toUpperCase = value => value.toUpperCase()
 const formattedField = propName => pipe(
@@ -35,6 +47,36 @@ const implementSpec = applySpec({
 	fleet: formattedField('fleet'),
 	responsible: path(['responsible']),
 })
+
+const implementsQuery =  applySpec({
+  operation: pipe(
+    pathOr('', ['operation']),
+    iLikeOperation,
+  ),
+  reason: pipe(
+    pathOr('', ['reason']),
+    iLikeOperation,
+  ),
+	plate: pipe(
+    formattedField('plate'),
+    iLikeOperation,
+  ),
+	fleet: pipe(
+    pathOr('', ['fleet']),
+    iLikeOperation,
+  ),
+  priority: path(['priority']),
+  status: path(['status']),
+  active: pipe(
+    path(['active']),
+    toBooleanValue,
+  ),
+	responsible: pipe(
+    pathOr('', ['responsible']),
+    iLikeOperation,
+  ),
+})
+
 
 const include = [
   ImplementEventModel,
@@ -192,12 +234,36 @@ const getById = async (req, res, next) => {
 }
 
 const getAll = async (req, res, next) => {
-  const reason = pathOr(null, ['query', 'reason'], req)
-  const query = (
-    reason
-      ? { where: { reason, active: true }, include, attributes, order: [['createdAt', 'DESC']] }
-      : { include, attributes, order: [['createdAt', 'DESC']] }
+  const querySpec = removeFiledsNilOrEmpty(
+      implementsQuery(
+        pathOr({}, ['query'], req)
+    )
   )
+
+  const responsible = pathOr(null, ['responsible'], querySpec)
+
+  const includeValues = (
+    responsible 
+      ? [{
+          model: ImplementEventModel,
+          where: { responsible }
+        }]
+      : [{ model: ImplementEventModel }] 
+  )
+
+  let query = {
+    where: querySpec,
+    include: includeValues,
+    attributes,
+    order: [['createdAt', 'DESC']],
+  }
+
+  delete query.where.responsible
+
+  if (isEmpty(pathOr({}, ['where'], query))) {
+    query = omit(['where'], query)
+  }
+
   try {
     const response = await ImplementModel.findAll(query)
     res.json(response)
