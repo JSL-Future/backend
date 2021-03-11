@@ -11,7 +11,10 @@ const authentication = async (req, res, next) => {
   console.log('primeiro 2', req.body)
   const user = await UserModel.findOne({ where: { document: req.body.document } })
   console.log('primeiro 3')
-  const checkedPassword = await compare(req.body.password, user.password)
+  let checkedPassword = null;
+  if (user) {
+    checkedPassword = await compare(req.body.password, user.password)
+  }
   console.log('primeiro 4')
   if(!checkedPassword) {  
     console.log('primeiro 5')
