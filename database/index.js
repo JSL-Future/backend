@@ -15,6 +15,11 @@ if(DATABASE_URL) {
       logging: false,
       native: true,
       ssl: true,
+      extra: {
+        ssl: {
+          rejectUnauthorized: false
+        },
+      },
       pool: {
         max: 5,
         min: 0,
