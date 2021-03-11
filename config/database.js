@@ -10,7 +10,8 @@ module.exports = {
     database: DB_NAME,
     host: DB_HOST,
     dialect: 'postgres',
-    ssl: true,
+    native: true,
+    ssl: true
   },
   test: {
     username: DB_USERNAME,
@@ -18,7 +19,8 @@ module.exports = {
     database: DB_NAME,
     host: DB_HOST,
     dialect: 'postgres',
-    ssl: true,
+    native: true,
+    ssl: true
   },
   production: {
     username: DB_USERNAME,
@@ -26,6 +28,7 @@ module.exports = {
     database: DB_NAME,
     host: DB_HOST,
     dialect: 'postgres',
-    ssl: true,
+    native: true,
+    ssl: true
   }
 }
