@@ -8,7 +8,7 @@ const secret = process.env.SECRET
 const authentication = async (req, res, next) => {
  console.log('primeiro 1')
  try {
-  console.log('primeiro 2', req.body)
+  console.log('primeiro 2')
   const user = await UserModel.findOne({ where: { document: req.body.document } })
   console.log('primeiro 3')
   let checkedPassword = null;
