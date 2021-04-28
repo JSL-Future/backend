@@ -1,7 +1,11 @@
-const { applySpec, pathOr, isEmpty, isNil, path } = require('ramda')
+const { applySpec, pathOr, isEmpty, isNil, path, propOr, concat } = require('ramda')
+const Sequelize = require('sequelize')
 const database = require('../../database')
 const ImplementModel = database.model('implement')
 const ImplementEventModel = database.model('implement_event')
+const { Op } = Sequelize
+const { iLike } = Op
+const removeFiledsNilOrEmpty = require('../../utils')
 
 const suplySpec = applySpec({
   status: path(['status']),
@@ -166,15 +170,32 @@ const getById = async (req, res, next) => {
   }
 }
 
+const iLikeOperation = (propName) => (values) => {
+  const propValue = propOr('', propName, values)
+  if (isEmpty(propValue)) {
+    return null
+  }
+
+  return {
+    [iLike]: concat(concat('%', propValue), '%')
+  }
+}
+
 const getAll = async (req, res, next) => {
-  const reason = pathOr(null, ['query', 'reason'], req)
-  const query = (
-    reason
-      ? { where: { reason, active: true }, include, attributes, order: [['createdAt', 'DESC']] }
-      : { include, attributes, order: [['createdAt', 'DESC']] }
-  )
+  const buildQuery = applySpec({
+    status: iLikeOperation('status'),
+    plate: iLikeOperation('plate'),
+    operation: iLikeOperation('operation'),
+    fleet: iLikeOperation('fleet'),
+    reason: iLikeOperation('reason'),
+    priority: iLikeOperation('priority'),
+    active: pathOr(null, ['active']),
+  })
+
+  const where = removeFiledsNilOrEmpty(buildQuery(pathOr(null, ['query'], req)))
+
   try {
-    const response = await ImplementModel.findAll(query)
+    const response = await ImplementModel.findAll({ where, include, attributes, order: [['createdAt', 'DESC']] })
     res.json(response)
   } catch (error) {
     res.status(400).json(error)
