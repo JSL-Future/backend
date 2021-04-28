@@ -36,7 +36,10 @@ const implementSpec = applySpec({
   operation: pathOr(null, ['operation']),
   reason: pathOr(null, ['reason']),
 	plate: formattedField('plate'),
-	fleet: formattedField('fleet'),
+	fleet: pipe(
+    pathOr('', ['fleet']),
+    toUpperCase
+  ),
 	responsible: pathOr(null, ['responsible']),
 })
 
@@ -205,9 +208,23 @@ const iLikeOperation = (propName) => (values) => {
   }
 }
 
+const iLikeOperationPlate = (value) => {
+  if (isEmpty(value) || !value) {
+    return null
+  }
+
+  return {
+    [iLike]: concat(concat('%', value), '%')
+  }
+}
+
 const buildQuery = applySpec({
   status: iLikeOperation('status'),
-  plate: iLikeOperation('plate'),
+  plate: pipe(
+    pathOr('', ['plate']),
+    replace(/[^a-z0-9]/gi, ''),
+    iLikeOperationPlate
+  ),
   operation: iLikeOperation('operation'),
   fleet: iLikeOperation('fleet'),
   reason: iLikeOperation('reason'),
@@ -217,7 +234,6 @@ const buildQuery = applySpec({
 
 const getAll = async (req, res, next) => {
   const where = removeFiledsNilOrEmpty(buildQuery(pathOr({}, ['query'], req)))
-  console.log(where)
   try {
     const response = await ImplementModel.findAll({ where, include, attributes, order: [['createdAt', 'DESC']] })
     res.json(response)
