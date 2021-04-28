@@ -1,17 +1,12 @@
-const { Op } = require('sequelize')
-const {
-  applySpec,
-  isEmpty,
-  isNil,
-  path,
-  pathOr,
-  pipe,
-  replace,
-  omit,
-} = require('ramda')
+const { applySpec, pathOr, isEmpty, isNil, path, propOr, concat } = require('ramda')
+const Sequelize = require('sequelize')
+
 const database = require('../../database')
 const ImplementModel = database.model('implement')
 const ImplementEventModel = database.model('implement_event')
+const { Op } = Sequelize
+const { iLike } = Op
+const removeFiledsNilOrEmpty = require('../../utils')
 
 const  {
   iLikeOperation,
@@ -233,39 +228,32 @@ const getById = async (req, res, next) => {
   }
 }
 
+const iLikeOperation = (propName) => (values) => {
+  const propValue = propOr('', propName, values)
+  if (isEmpty(propValue)) {
+    return null
+  }
+
+  return {
+    [iLike]: concat(concat('%', propValue), '%')
+  }
+}
+
 const getAll = async (req, res, next) => {
-  const querySpec = removeFiledsNilOrEmpty(
-      implementsQuery(
-        pathOr({}, ['query'], req)
-    )
-  )
+  const buildQuery = applySpec({
+    status: iLikeOperation('status'),
+    plate: iLikeOperation('plate'),
+    operation: iLikeOperation('operation'),
+    fleet: iLikeOperation('fleet'),
+    reason: iLikeOperation('reason'),
+    priority: iLikeOperation('priority'),
+    active: pathOr(null, ['active']),
+  })
 
-  const responsible = pathOr(null, ['responsible'], querySpec)
-
-  const includeValues = (
-    responsible 
-      ? [{
-          model: ImplementEventModel,
-          where: { responsible }
-        }]
-      : [{ model: ImplementEventModel }] 
-  )
-
-  let query = {
-    where: querySpec,
-    include: includeValues,
-    attributes,
-    order: [['createdAt', 'DESC']],
-  }
-
-  delete query.where.responsible
-
-  if (isEmpty(pathOr({}, ['where'], query))) {
-    query = omit(['where'], query)
-  }
+  const where = removeFiledsNilOrEmpty(buildQuery(pathOr(null, ['query'], req)))
 
   try {
-    const response = await ImplementModel.findAll(query)
+    const response = await ImplementModel.findAll({ where, include, attributes, order: [['createdAt', 'DESC']] })
     res.json(response)
   } catch (error) {
     res.status(400).json(error)
