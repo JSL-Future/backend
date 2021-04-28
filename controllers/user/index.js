@@ -1,4 +1,5 @@
 const { hash } = require('bcrypt')
+const { omit } = require('ramda')
 const database = require('../../database')
 const UserModel = database.model('user')
 
@@ -13,9 +14,10 @@ const create = async (req, res, next) => {
 }
 
 const update = async (req, res, next) => {
+  const userWithouPwd = omit(['password'], req.body)
   try {
     const findUser = await UserModel.findByPk(req.params.id)
-    await findUser.update(req.body)
+    await findUser.update(userWithouPwd)
     const response = await findUser.reload()
     res.json(response)
   } catch (error) {
@@ -32,8 +34,18 @@ const getById = async (req, res, next) => {
   }
 }
 
+const getAll = async (req, res, next) => {
+  try {
+    const response = await UserModel.findAll()
+    res.json(response)
+  } catch (error) {
+    res.status(400).json({ error })
+  }
+}
+
 module.exports = {
   create,
   update,
   getById,
+  getAll,
 }

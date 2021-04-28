@@ -1,11 +1,17 @@
 const { applySpec, pathOr, isEmpty, isNil, path, propOr, concat } = require('ramda')
 const Sequelize = require('sequelize')
+
 const database = require('../../database')
 const ImplementModel = database.model('implement')
 const ImplementEventModel = database.model('implement_event')
 const { Op } = Sequelize
 const { iLike } = Op
 const removeFiledsNilOrEmpty = require('../../utils')
+
+const  {
+  iLikeOperation,
+  removeFiledsNilOrEmpty,
+} = require('../../utils/search-tools')
 
 const suplySpec = applySpec({
   status: path(['status']),
@@ -15,6 +21,57 @@ const suplySpec = applySpec({
 	totalLiters: pathOr(null, ['totalLiters']),
   registrationDriver: pathOr(null, ['registrationDriver']),
 })
+
+const toBooleanValue = value => (
+  value === true || value === 'true'
+    ? true
+    : false
+)
+
+const toUpperCase = value => value.toUpperCase()
+const formattedField = propName => pipe(
+  pathOr('', [propName]),
+  replace(/[^a-z0-9]/gi, ''),
+  toUpperCase
+)
+
+const implementSpec = applySpec({
+  operation: path(['operation']),
+  reason: path(['reason']),
+	plate: formattedField('plate'),
+	fleet: formattedField('fleet'),
+	responsible: path(['responsible']),
+})
+
+const implementsQuery =  applySpec({
+  operation: pipe(
+    pathOr('', ['operation']),
+    iLikeOperation,
+  ),
+  reason: pipe(
+    pathOr('', ['reason']),
+    iLikeOperation,
+  ),
+	plate: pipe(
+    formattedField('plate'),
+    iLikeOperation,
+  ),
+	fleet: pipe(
+    pathOr('', ['fleet']),
+    iLikeOperation,
+  ),
+  priority: path(['priority']),
+  status: path(['status']),
+  active: pipe(
+    path(['active']),
+    toBooleanValue,
+  ),
+	responsible: pipe(
+    pathOr('', ['responsible']),
+    iLikeOperation,
+  ),
+})
+
 
 const include = [
   ImplementEventModel,
@@ -41,21 +98,22 @@ const attributes = [
 const create = async (req, res, next) => {
   const user = req.decoded.user
   const transaction = await database.transaction()
-  const query =  { where: { plate: req.body.plate, active: true } }
-  try {
+  const query =  { where: { plate: { [Op.iLike]: `%${req.body.plate}%` }, active: true } }
+  const implementParseData = implementSpec(req.body)
 
+  try {
     const findImplement = await ImplementModel.findOne(query)
     if (findImplement) {
-      throw new Error(`Allow only one active implement to this plate: ${req.body.plate}`)
+      throw new Error(`Allow only one active implement to this plate: ${toUpperCase(req.body.plate)}`)
     }
 
-    const implementCreated = await ImplementModel.create(req.body, { transaction })
+    const implementCreated = await ImplementModel.create(implementParseData, { transaction })
     await ImplementEventModel.create({
       responsible: req.body.responsible,
       userId: user.id,
       implementId: implementCreated.id
     }, { transaction })
-    console.log(implementCreated)
+
     await implementCreated.reload({
       transaction,
       include,

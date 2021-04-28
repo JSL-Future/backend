@@ -9,20 +9,41 @@ module.exports = {
     password: DB_PWD,
     database: DB_NAME,
     host: DB_HOST,
-    dialect: 'postgres'
+    dialect: 'postgres',
+    native: true,
+    ssl: true,
+    extra: {
+      ssl: {
+        rejectUnauthorized: false
+      },
+    },
   },
   test: {
     username: DB_USERNAME,
     password: DB_PWD,
     database: DB_NAME,
     host: DB_HOST,
-    dialect: 'postgres'
+    dialect: 'postgres',
+    native: true,
+    ssl: true,
+    extra: {
+      ssl: {
+        rejectUnauthorized: false
+      },
+    },
   },
   production: {
     username: DB_USERNAME,
     password: DB_PWD,
     database: DB_NAME,
     host: DB_HOST,
-    dialect: 'postgres'
+    dialect: 'postgres',
+    native: true,
+    ssl: true,
+    extra: {
+      ssl: {
+        rejectUnauthorized: false
+      },
+    },
   }
 }
