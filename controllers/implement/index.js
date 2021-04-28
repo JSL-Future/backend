@@ -1,4 +1,4 @@
-const { applySpec, pathOr, isEmpty, isNil, path, propOr, concat } = require('ramda')
+const { applySpec, pathOr, isEmpty, isNil, path, propOr, concat, pipe, replace } = require('ramda')
 const Sequelize = require('sequelize')
 
 const database = require('../../database')
@@ -7,11 +7,6 @@ const ImplementEventModel = database.model('implement_event')
 const { Op } = Sequelize
 const { iLike } = Op
 const removeFiledsNilOrEmpty = require('../../utils')
-
-const  {
-  iLikeOperation,
-  removeFiledsNilOrEmpty,
-} = require('../../utils/search-tools')
 
 const suplySpec = applySpec({
   status: path(['status']),
@@ -42,36 +37,6 @@ const implementSpec = applySpec({
 	fleet: formattedField('fleet'),
 	responsible: path(['responsible']),
 })
-
-const implementsQuery =  applySpec({
-  operation: pipe(
-    pathOr('', ['operation']),
-    iLikeOperation,
-  ),
-  reason: pipe(
-    pathOr('', ['reason']),
-    iLikeOperation,
-  ),
-	plate: pipe(
-    formattedField('plate'),
-    iLikeOperation,
-  ),
-	fleet: pipe(
-    pathOr('', ['fleet']),
-    iLikeOperation,
-  ),
-  priority: path(['priority']),
-  status: path(['status']),
-  active: pipe(
-    path(['active']),
-    toBooleanValue,
-  ),
-	responsible: pipe(
-    pathOr('', ['responsible']),
-    iLikeOperation,
-  ),
-})
-
 
 const include = [
   ImplementEventModel,
