@@ -1,15 +1,43 @@
-const { applySpec, pathOr, isEmpty, isNil, path } = require('ramda')
+const { 
+  applySpec,
+  pathOr,
+  isEmpty,
+  isNil,
+  propOr,
+  concat,
+  replace,
+  pipe
+} = require('ramda')
 const database = require('../../database')
 const ImplementModel = database.model('implement')
 const ImplementEventModel = database.model('implement_event')
+const removeFiledsNilOrEmpty = require('../../utils')
+const Sequelize = require('sequelize')
+const { Op } = Sequelize
+const { iLike } = Op
 
 const suplySpec = applySpec({
-  status: path(['status']),
+  status: pathOr(null, ['status']),
   fuel: pathOr(null, ['fuel']),
 	mileage: pathOr(null, ['mileage']),
 	pedometer: pathOr(null, ['pedometer']),
 	totalLiters: pathOr(null, ['totalLiters']),
   registrationDriver: pathOr(null, ['registrationDriver']),
+})
+
+const toUpperCase = value => value.toUpperCase()
+const formattedField = propName => pipe(
+  pathOr('', [propName]),
+  replace(/[^a-z0-9]/gi, ''),
+  toUpperCase
+)
+
+const implementSpec = applySpec({
+  operation: pathOr(null, ['operation']),
+  reason: pathOr(null, ['reason']),
+	plate: formattedField('plate'),
+	fleet: formattedField('fleet'),
+	responsible: pathOr(null, ['responsible']),
 })
 
 const include = [
@@ -45,13 +73,13 @@ const create = async (req, res, next) => {
       throw new Error(`Allow only one active implement to this plate: ${req.body.plate}`)
     }
 
-    const implementCreated = await ImplementModel.create(req.body, { transaction })
+    const implementCreated = await ImplementModel.create(implementSpec(req.body), { transaction })
     await ImplementEventModel.create({
       responsible: req.body.responsible,
       userId: user.id,
       implementId: implementCreated.id
     }, { transaction })
-    console.log(implementCreated)
+
     await implementCreated.reload({
       transaction,
       include,
@@ -166,15 +194,32 @@ const getById = async (req, res, next) => {
   }
 }
 
+const iLikeOperation = (propName) => (values) => {
+  const propValue = propOr('', propName, values)
+  if (isEmpty(propValue)) {
+    return null
+  }
+
+  return {
+    [iLike]: concat(concat('%', propValue), '%')
+  }
+}
+
+const buildQuery = applySpec({
+  status: iLikeOperation('status'),
+  plate: iLikeOperation('plate'),
+  operation: iLikeOperation('operation'),
+  fleet: iLikeOperation('fleet'),
+  reason: iLikeOperation('reason'),
+  priority: iLikeOperation('priority'),
+  active: pathOr(null, ['active']),
+})
+
 const getAll = async (req, res, next) => {
-  const reason = pathOr(null, ['query', 'reason'], req)
-  const query = (
-    reason
-      ? { where: { reason, active: true }, include, attributes, order: [['createdAt', 'DESC']] }
-      : { include, attributes, order: [['createdAt', 'DESC']] }
-  )
+  const where = removeFiledsNilOrEmpty(buildQuery(pathOr({}, ['query'], req)))
+  console.log(where)
   try {
-    const response = await ImplementModel.findAll(query)
+    const response = await ImplementModel.findAll({ where, include, attributes, order: [['createdAt', 'DESC']] })
     res.json(response)
   } catch (error) {
     res.status(400).json(error)
