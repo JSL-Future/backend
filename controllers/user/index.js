@@ -3,7 +3,7 @@ const database = require('../../database')
 const UserModel = database.model('user')
 
 const create = async (req, res, next) => {
-  const password = await hash(req.body.password, 10)
+  const password = await hash('123456', 10)
   try {
     const response = await UserModel.create({ ...req.body, password })
     res.json(response)
