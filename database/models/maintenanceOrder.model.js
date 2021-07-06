@@ -72,35 +72,35 @@ const MaintenanceOrder = (sequelize) => {
   })
   
   MaintenanceOrder.associate = (models) => {
-    models.maintenanceOrder.belongsTo(models.company, {
-      foreignKey: {
-        allowNull: false,
-      }
-    })
+    // models.maintenanceOrder.belongsTo(models.company, {
+    //   foreignKey: {
+    //     allowNull: false,
+    //   }
+    // })
 
-    models.maintenanceOrder.belongsTo(models.user, {
-      foreignKey: {
-        allowNull: false,
-      }
-    })
+    // models.maintenanceOrder.belongsTo(models.user, {
+    //   foreignKey: {
+    //     allowNull: false,
+    //   }
+    // })
 
-    models.maintenanceOrder.belongsTo(models.operation, {
-      foreignKey: {
-        allowNull: false,
-      }
-    })
+    // models.maintenanceOrder.belongsTo(models.operation, {
+    //   foreignKey: {
+    //     allowNull: false,
+    //   }
+    // })
 
-    models.maintenanceOrder.hasMany(models.maintenanceOrderEvent, {
-      foreignKey: {
-        allowNull: false,
-      }
-    })
+    // models.maintenanceOrder.hasMany(models.maintenanceOrderEvent, {
+    //   foreignKey: {
+    //     allowNull: false,
+    //   }
+    // })
 
-    models.maintenanceOrder.hasMany(models.supply, {
-      foreignKey: {
-        allowNull: false,
-      }
-    })
+    // models.maintenanceOrder.hasMany(models.supply, {
+    //   foreignKey: {
+    //     allowNull: false,
+    //   }
+    // })
 
   }
 

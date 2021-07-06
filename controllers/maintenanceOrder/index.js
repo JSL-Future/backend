@@ -13,9 +13,10 @@ const create = async (req, res, next) => {
     const payload = await MaintenanceOrderModel.create({...req.body, userId }, { include:[MaintenanceOrderEventModel], transaction })
     const response = await MaintenanceOrderModel.findByPk(payload.id, { include:[MaintenanceOrderEventModel], transaction })
     await MaintenanceOrderEventModel.create({ userId, companyId, maintenanceOrderId: payload.id }, { transaction })
-
+    await transaction.commit()
     res.json(response)
   } catch (error) {
+    await transaction.rollback()
     res.status(400).json({ error: error.message })
   }
 }

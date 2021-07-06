@@ -26,6 +26,13 @@ const VehicleType = (sequelize) => {
         allowNull: false,
       }
     })
+
+    models.vehicleType.hasMany(models.vehicle, {
+      foreignKey: {
+        allowNull: false,
+      }
+    })
+
   }
 
   return VehicleType
