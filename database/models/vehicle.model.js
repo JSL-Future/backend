@@ -25,6 +25,7 @@ const Vehicle = (sequelize) => {
     lastMaintenance: {
       type: Sequelize.DATE,
       allowNull: false,
+      defaultValue: new Date()
     },
     situation: {
       type: Sequelize.ENUM(['regular', 'unregular']),

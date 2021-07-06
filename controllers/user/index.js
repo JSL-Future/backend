@@ -1,4 +1,5 @@
 const { hash } = require('bcrypt')
+const { omit } = require('ramda')
 const database = require('../../database')
 const UserModel = database.model('user')
 
@@ -13,9 +14,10 @@ const create = async (req, res, next) => {
 }
 
 const update = async (req, res, next) => {
+  const payload = omit(['password'], req.body)
   try {
     const findUser = await UserModel.findByPk(req.params.id)
-    await findUser.update(req.body)
+    await findUser.update(payload)
     const response = await findUser.reload()
     res.json(response)
   } catch (error) {
@@ -41,9 +43,29 @@ const getAll = async (req, res, next) => {
   }
 }
 
+const updatePassword = async (req, res, next) => {
+  const password = await hash(req.body.password, 10)
+  try {
+    const findUser = await UserModel.findByPk(req.body.id)
+    const checkedPassword = await compare(req.body.password, findUser.password)
+
+    if(!checkedPassword) {
+      throw new Error('Username or password do not match')
+    }
+
+    await findUser.update({ password })
+    await findUser.reload()
+
+    res.json(findUser)
+  } catch (error) {
+    res.status(400).json({ error })
+  }
+}
+
 module.exports = {
   create,
   update,
   getById,
   getAll,
+  updatePassword,
 }
