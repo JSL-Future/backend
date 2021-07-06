@@ -1,7 +1,7 @@
 const Sequelize = require('sequelize')
 
-const User = (sequelize) => {
-  const User = sequelize.define('user', {
+const Driver = (sequelize) => {
+  const Driver = sequelize.define('driver', {
     id: {
       type: Sequelize.UUID,
       defaultValue: Sequelize.UUIDV4,
@@ -10,27 +10,34 @@ const User = (sequelize) => {
     name: {
       type: Sequelize.STRING,
       allowNull: false,
+      unique: true,
     },
-    document: {
+    phone: {
       type: Sequelize.STRING,
       allowNull: false,
       unique: true,
     },
-    password: {
+    driverLicense: {
       type: Sequelize.STRING,
       allowNull: false,
     },
   })
   
-  User.associate = (models) => {
-    models.user.belongsTo(models.company, {
+  Driver.associate = (models) => {
+    models.driver.belongsTo(models.company, {
+      foreignKey: {
+        allowNull: false,
+      }
+    })
+
+    models.driver.belongsTo(models.user, {
       foreignKey: {
         allowNull: false,
       }
     })
   }
 
-  return User
+  return Driver
 }
 
-module.exports = User
+module.exports = Driver

@@ -38,7 +38,7 @@ if(DATABASE_URL) {
 }
 
 const ModelInstances = Models.map(model => model(sequelize))
-sequelize.sync({ force: true })
+// sequelize.sync({ force: true })
 ModelInstances
   .forEach(
     modelInstance =>

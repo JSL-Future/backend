@@ -1,0 +1,53 @@
+{
+  "vehicles": [
+    {
+      "id": 1,
+      "plate": "AUO4429",
+      "fleet": "11106110",
+      "vehicleType": "cart",
+      "preventiveMaintenanceLimite": 6,
+      "lastMaintenance": "2021-02-24",
+      "situation": "regular"
+    }
+  ],
+  "drivers": [
+    {
+      "id": 1,
+      "name": "Alexandre Soares",
+      "phoneDriver": "11987654321",
+      "driverLicense": "111111111111"
+    }
+  ],
+  "operations": [
+    {
+      "id": 1,
+      "name": "gmIinterplatas",
+      "vacancy": "40000",
+      "branch": 2
+    }
+  ],
+  "vehiclesType": [
+    {
+      "id": 1,
+      "name": "Cavalo"
+    }
+  ],
+  "maintenanceOrderEvents": [],
+  "maintenanceOrders": [
+    {
+      "id": 12,
+      "maintenanceDate": "2021-02-21",
+      "plateHorse": "ABC1234",
+      "plateCart": "ABC1234",
+      "fleet": "899000",
+      "centralCost": "JDF-F20091-200",
+      "driver": "Alexandre Soares",
+      "phoneDriver": "11987654321",
+      "priority": "high",
+      "service": "pre-repair",
+      "ServiceDescription": "Troca argolas para passar o cabo de aço da carroceria",
+      "branch": 1,
+      "serviceDescription": "penues"
+    }
+  ]
+}

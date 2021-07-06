@@ -1,15 +1,21 @@
 const User = require('./user.model')
-const Implement = require('./implement.model')
-const ImplementEvent = require('./implementEvent.model')
 const Company = require('./company.model')
-const Solicitation = require('./solicitation.model')
-const Suply = require('./suply.model')
+const Operation = require('./operation.model')
+const VehicleType = require('./vehicleType.model')
+const Vehicle = require('./vehicle.model')
+const Driver = require('./driver.model')
+const MaintenanceOrder = require('./maintenanceOrder.model')
+const MaintenanceOrderEvent = require('./maintenanceOrderEvent.model')
+const Supply = require('./supply.model')
 
 module.exports = [
   Company,
   User,
-  Implement,
-  ImplementEvent,
-  Solicitation,
-  Suply
+  Operation,
+  VehicleType,
+  Vehicle,
+  Driver,
+  MaintenanceOrder,
+  MaintenanceOrderEvent,
+  Supply
 ]

@@ -8,19 +8,43 @@ const Company = (sequelize) => {
       primaryKey: true,
     },
     name: {
-        type: Sequelize.STRING,
-        allowNull: false,
+      type: Sequelize.STRING,
+      allowNull: false,
     },
     document: {
-        type: Sequelize.STRING,
-        allowNull: false,
-        unique: true
+      type: Sequelize.STRING,
+      allowNull: false,
+      unique: true
     },
     type: {
-        type: Sequelize.ENUM(['filial', 'matriz']),
-        allowNull: false,
-        defaultValue: 'filial'
-    }
+      type: Sequelize.ENUM(['filial', 'matriz']),
+      allowNull: false,
+      defaultValue: 'filial'
+    },
+    zipcode: {
+      type: Sequelize.STRING,
+      allowNull: false,
+    },
+    street: {
+      type: Sequelize.STRING,
+      allowNull: false,
+    },
+    streetNumber: {
+      type: Sequelize.STRING,
+      allowNull: false,
+    },
+    neighborhood: {
+      type: Sequelize.STRING,
+      allowNull: false,
+    },
+    city: {
+      type: Sequelize.STRING,
+      allowNull: false,
+    },
+    state: {
+      type: Sequelize.STRING,
+      allowNull: false,
+    },
   })
 
   return Company
