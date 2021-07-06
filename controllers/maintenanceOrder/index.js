@@ -57,18 +57,29 @@ const createEventToMaintenanceOrder =  async (req, res, next) => {
   const userId = pathOr(null, ['decoded', 'user', 'id'], req)
   const companyId = pathOr(null, ['decoded', 'user', 'companyId'], req)
   const status = pathOr(null, ['body', 'status'], req)
-
+  const driverId = pathOr(null, ['body', 'driverId'], req)
   const transaction = await database.transaction()
+  let payload = pathOr({}, ['body'], req)
+
   try { 
+    const findDriver = await DriverModel.findByPk(driverId)
     const response = await MaintenanceOrderModel.findByPk(maintenanceOrderId, { include: [MaintenanceOrderEventModel], transaction })
     await MaintenanceOrderEventModel.create({ userId, companyId, maintenanceOrderId, status }, { transaction })
-    
+
+    if (status === 'check-out' && response.driverMainLicense !== findDriver.driverLicense) {
+      payload = {
+        ...payload,
+        driverPhoneSecondary: findDriver.phone,
+        driverSecondary: findDriver.name,
+        driverSecondaryLicense: findDriver.driverLicense
+      }
+    }
 
     if (status === 'supply') {
-      await SupplyModel.create(req.body, { transaction })
+      await SupplyModel.create({...req.body, maintenanceOrderId, userId, companyId }, { transaction })
     }
     
-    await response.update(req.body, { transaction })
+    await response.update(payload, { transaction })
     await response.reload({ transaction })
     await transaction.commit()
     res.json(response)

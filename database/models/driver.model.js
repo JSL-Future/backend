@@ -10,16 +10,15 @@ const Driver = (sequelize) => {
     name: {
       type: Sequelize.STRING,
       allowNull: false,
-      unique: true,
     },
     phone: {
       type: Sequelize.STRING,
       allowNull: false,
-      unique: true,
     },
     driverLicense: {
       type: Sequelize.STRING,
       allowNull: false,
+      unique: true,
     },
   })
   

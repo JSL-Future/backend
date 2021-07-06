@@ -15,6 +15,14 @@ const MaintenanceOrder = (sequelize) => {
       type: Sequelize.STRING,
       allowNull: false,
     },
+    driverMainLicense: {
+      type: Sequelize.STRING,
+      allowNull: false,
+    },
+    driverSecondaryLicense: {
+      type: Sequelize.STRING,
+      allowNull: true,
+    },
     driverPhoneSecondary:{
       type: Sequelize.STRING,
       allowNull: true,
