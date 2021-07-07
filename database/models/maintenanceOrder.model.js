@@ -36,7 +36,7 @@ const MaintenanceOrder = (sequelize) => {
       type: Sequelize.STRING,
       allowNull: true,
     },
-    plateHorser: {
+    plateHorse: {
       type: Sequelize.STRING,
       allowNull: true,
     },

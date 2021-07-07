@@ -36,7 +36,7 @@ module.exports = {
       type: Sequelize.STRING,
       allowNull: true,
     },
-    plateHorser: {
+    plateHorse: {
       type: Sequelize.STRING,
       allowNull: true,
     },

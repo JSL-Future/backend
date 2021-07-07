@@ -6,7 +6,7 @@ const SupplyModel = database.model('supply')
 const CompanyModel = database.model('company')
 const Sequelize = require('sequelize')
 const { Op } = Sequelize
-const { or } = Op
+const { or, and } = Op
 
 const create = async (req, res, next) => {
   const userId = pathOr(null, ['decoded', 'user', 'id'], req)
@@ -14,6 +14,18 @@ const create = async (req, res, next) => {
 
   const transaction = await database.transaction()
   try {
+    const findOrder = await MaintenanceOrderModel.findOne({ where: {
+      [and]: [
+        { plateHorse: req.body.plateHorse },
+        { plateCart: req.body.plateCart },
+        { activated: true },
+      ]
+    }})
+
+    if (findOrder) {
+      throw new Error ('Allow only one order for these plates!')
+    }
+
     const payload = await MaintenanceOrderModel.create({...req.body, userId }, { include:[MaintenanceOrderEventModel, CompanyModel], transaction })
     const response = await MaintenanceOrderModel.findByPk(payload.id, { include:[MaintenanceOrderEventModel, CompanyModel], transaction })
     await MaintenanceOrderEventModel.create({ userId, companyId, maintenanceOrderId: payload.id }, { transaction })
@@ -51,10 +63,12 @@ const getAll = async (req, res, next) => {
   const limit = pathOr(20, ['query', 'limit'], req)
   const offset = pathOr(0, ['query', 'offset'], req)
   const plate = pathOr(null, ['query', 'plate'], req)
-  const isPlate = plate ? { plate: { [or]: [
-    { plateCart: plate },
-    { plateHorser: plate }
-  ] } } : null
+  const isPlate = plate ? {
+    [or]: [
+      { plateHorse: plate },
+      { plateCart: plate }
+    ]
+  } : null
   let where = {}
 
   if (isPlate) {
