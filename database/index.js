@@ -29,17 +29,15 @@ if(DATABASE_URL) {
     dialect: 'postgres',
     logging: false,
     pool: {
-      max: 15,
-      min: 5,
-      acquire: 60000,
-      idle: 20000,
-      evict: 15000
+      max: 5,
+      min: 0,
+      acquire: 30000,
+      idle: 10000
     },
   })
 }
 
 const ModelInstances = Models.map(model => model(sequelize))
-// sequelize.sync({ force: true })
 ModelInstances
   .forEach(
     modelInstance =>
