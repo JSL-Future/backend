@@ -4,8 +4,9 @@ const MaintenanceOrderModel = database.model('maintenanceOrder')
 const MaintenanceOrderEventModel = database.model('maintenanceOrderEvent')
 const SupplyModel = database.model('supply')
 const CompanyModel = database.model('company')
+const Sequelize = require('sequelize')
 const { Op } = Sequelize
-const { iLike, or } = Op
+const { or } = Op
 
 const create = async (req, res, next) => {
   const userId = pathOr(null, ['decoded', 'user', 'id'], req)
