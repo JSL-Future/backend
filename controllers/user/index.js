@@ -37,7 +37,7 @@ const getById = async (req, res, next) => {
 
 const getAll = async (req, res, next) => {
   try {
-    const response = await UserModel.findAll()
+    const response = await UserModel.findAndCountAll()
     res.json(response)
   } catch (error) {
     res.status(400).json({ error })

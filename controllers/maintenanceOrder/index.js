@@ -4,6 +4,9 @@ const MaintenanceOrderModel = database.model('maintenanceOrder')
 const MaintenanceOrderEventModel = database.model('maintenanceOrderEvent')
 const SupplyModel = database.model('supply')
 const CompanyModel = database.model('company')
+const { Op } = Sequelize
+const { iLike, or } = Op
+
 const create = async (req, res, next) => {
   const userId = pathOr(null, ['decoded', 'user', 'id'], req)
   const companyId = pathOr(null, ['decoded', 'user', 'companyId'], req)
@@ -44,8 +47,21 @@ const getById = async (req, res, next) => {
 }
 
 const getAll = async (req, res, next) => {
+  const limit = pathOr(20, ['query', 'limit'], req)
+  const offset = pathOr(0, ['query', 'offset'], req)
+  const plate = pathOr(null, ['query', 'plate'], req)
+  const isPlate = plate ? { plate: { [or]: [
+    { plateCart: plate },
+    { plateHorser: plate }
+  ] } } : null
+  let where = {}
+
+  if (isPlate) {
+    where = isPlate
+  }
+
   try {
-    const response = await MaintenanceOrderModel.findAll({ include: [CompanyModel, MaintenanceOrderEventModel]})
+    const response = await MaintenanceOrderModel.findAndCountAll({ where, include: [CompanyModel, MaintenanceOrderEventModel], offset, limit })
     res.json(response)
   } catch (error) {
     res.status(400).json({ error })
