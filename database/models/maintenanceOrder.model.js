@@ -7,6 +7,11 @@ const MaintenanceOrder = (sequelize) => {
       defaultValue: Sequelize.UUIDV4,
       primaryKey: true,
     },
+    activated: {
+      type: Sequelize.BOOLEAN,
+      allowNull: false,
+      defaultValue: true,
+    },
     driverMain:{
       type: Sequelize.STRING,
       allowNull: false,

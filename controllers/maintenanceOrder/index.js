@@ -75,6 +75,13 @@ const createEventToMaintenanceOrder =  async (req, res, next) => {
       }
     }
 
+    if (status === 'check-out') {
+      payload = {
+        ...payload,
+        activated: false,
+      }
+    }
+
     if (status === 'supply') {
       await SupplyModel.create({...req.body, maintenanceOrderId, userId, companyId }, { transaction })
     }
