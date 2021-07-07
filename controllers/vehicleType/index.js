@@ -36,8 +36,13 @@ const getById = async (req, res, next) => {
 }
 
 const getAll = async (req, res, next) => {
+  const limit = pathOr(20, ['query', 'limit'], req)
+  const offset = pathOr(0, ['query', 'offset'], req)
+  const name = pathOr(null, ['query', 'name'], req)
+  const where = name ? { name: { [iLike]: '%' + name + '%' } } : {}
+
   try {
-    const response = await VehicleTypeModel.findAll()
+    const response = await VehicleTypeModel.findAndCountAll({ where, limit, offset, })
     res.json(response)
   } catch (error) {
     res.status(400).json({ error })
