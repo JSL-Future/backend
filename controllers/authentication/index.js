@@ -3,7 +3,8 @@ const jwt = require('jsonwebtoken')
 const database = require('../../database')
 const UserModel = database.model('user')
 
-const secret = 'process.env.SECRET'
+const secret = process.env.SECRET
+
 
 const authentication = async (req, res, next) => {
  try {
