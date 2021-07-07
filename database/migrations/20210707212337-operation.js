@@ -1,11 +1,19 @@
 'use strict';
 
 module.exports = {
-  up: (queryInterface, Sequelize) => queryInterface.createTable('implement_events', {
+  up: (queryInterface, Sequelize) => queryInterface.createTable('operations', {
     id: {
       type: Sequelize.UUID,
       defaultValue: Sequelize.UUIDV4,
       primaryKey: true,
+    },
+    name: {
+      type: Sequelize.STRING,
+      allowNull: false,
+    },
+    vacancy: {
+      type: Sequelize.INTEGER,
+      allowNull: false,
     },
     userId: {
       type: Sequelize.UUID,
@@ -16,23 +24,14 @@ module.exports = {
       onUpdate: 'cascade',
       onDelete: 'restrict',
     },
-    implementId: {
+    companyId: {
       type: Sequelize.UUID,
       references: {
-        model: 'implements',
+        model: 'companies',
         key: 'id',
       },
       onUpdate: 'cascade',
       onDelete: 'restrict',
-    },
-    responsible: {
-      type: Sequelize.STRING,
-      allowNull: false,
-    },
-    status: {
-      type: Sequelize.ENUM(['check-in', 'check-out']),
-      allowNull: false,
-      defaultValue: 'check-in',
     },
     createdAt: {
       type: Sequelize.DATE,
@@ -43,5 +42,5 @@ module.exports = {
       allowNull: false,
     },
   }),
-  down: (queryInterface) => queryInterface.dropTable('implement_events')
+  down: (queryInterface) => queryInterface.dropTable('operations')
 };

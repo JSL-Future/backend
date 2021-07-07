@@ -1,35 +1,47 @@
 'use strict';
 
 module.exports = {
-  up: (queryInterface, Sequelize) => queryInterface.createTable('implements', {
+  up: (queryInterface, Sequelize) => queryInterface.createTable('companies', {
     id: {
       type: Sequelize.UUID,
       defaultValue: Sequelize.UUIDV4,
       primaryKey: true,
     },
-    active: {
-      type: Sequelize.BOOLEAN,
-      allowNull: false,
-      defaultValue: true,
-    },
-    status: {
-      type: Sequelize.ENUM(['check-in', 'check-out']),
-      allowNull: false,
-      defaultValue: 'check-in',
-    },
-    plate: {
+    name: {
       type: Sequelize.STRING,
       allowNull: false,
     },
-    operation: {
+    document: {
+      type: Sequelize.STRING,
+      allowNull: false,
+      unique: true
+    },
+    type: {
+      type: Sequelize.ENUM(['filial', 'matriz']),
+      allowNull: false,
+      defaultValue: 'filial'
+    },
+    zipcode: {
       type: Sequelize.STRING,
       allowNull: false,
     },
-    fleet: {
+    street: {
       type: Sequelize.STRING,
       allowNull: false,
     },
-    reason: {
+    streetNumber: {
+      type: Sequelize.STRING,
+      allowNull: false,
+    },
+    neighborhood: {
+      type: Sequelize.STRING,
+      allowNull: false,
+    },
+    city: {
+      type: Sequelize.STRING,
+      allowNull: false,
+    },
+    state: {
       type: Sequelize.STRING,
       allowNull: false,
     },
@@ -42,5 +54,5 @@ module.exports = {
       allowNull: false,
     },
   }),
-  down: (queryInterface) => queryInterface.dropTable('implements')
+  down: (queryInterface) => queryInterface.dropTable('companies')
 };
