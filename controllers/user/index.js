@@ -1,12 +1,13 @@
 const { hash } = require('bcrypt')
-const { omit } = require('ramda')
+const { omit, pathOr } = require('ramda')
 const database = require('../../database')
 const UserModel = database.model('user')
 
 const create = async (req, res, next) => {
+  const companyId = pathOr(null, ['decoded', 'user', 'companyId'], req)
   const password = await hash('123456', 10)
   try {
-    const response = await UserModel.create({ ...req.body, password })
+    const response = await UserModel.create({ ...req.body, password, companyId })
     res.json(response)
   } catch (error) {
     res.status(400).json({ error })

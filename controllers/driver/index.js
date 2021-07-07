@@ -55,9 +55,8 @@ const getAll = async (req, res, next) => {
     where = isName
   }
 
-
   try {
-    const response = await DriverModel.findAll({ where, limit, offset })
+    const response = await DriverModel.findAndCountAll({ where, limit, offset })
     res.json(response)
   } catch (error) {
     res.status(400).json({ error })

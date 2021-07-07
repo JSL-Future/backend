@@ -1,6 +1,6 @@
 const database = require('../../database')
 const CompanyModel = database.model('company')
-
+const { pathOr } = require('ramda')
 const Sequelize = require('sequelize')
 const { Op } = Sequelize
 const { iLike } = Op
@@ -10,7 +10,7 @@ const getAll = async (req, res, next) => {
   const offset = pathOr(0, ['query', 'offset'], req)
   const document = pathOr(null, ['query', 'document'], req)
   const name = pathOr(null, ['query', 'name'], req)
-  const isDocument = document ? { document: { [iLike]: '%' + document + '%' } } : null
+  const isDocument = document ? { document } : null
   const isName = name ? { name: { [iLike]: '%' + name + '%' } } : null
   let where = {}
   
