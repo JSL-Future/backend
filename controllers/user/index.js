@@ -7,7 +7,7 @@ const create = async (req, res, next) => {
   const companyId = pathOr(null, ['decoded', 'user', 'companyId'], req)
   const password = await hash('123456', 10)
   try {
-    const response = await UserModel.create({ ...req.body, password, companyId: "21324a79-dc8c-4a1c-9c5a-489370d9c918" })
+    const response = await UserModel.create({ ...req.body, password, companyId })
     res.json(response)
   } catch (error) {
     res.status(400).json({ error })
