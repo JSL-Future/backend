@@ -5,6 +5,7 @@ const UserModel = database.model('user')
 
 const secret = process.env.SECRET
 
+
 const authentication = async (req, res, next) => {
  try {
   const user = await UserModel.findOne({ where: { document: req.body.document } })
