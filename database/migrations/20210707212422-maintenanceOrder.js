@@ -39,10 +39,12 @@ module.exports = {
     plateHorse: {
       type: Sequelize.STRING,
       allowNull: true,
+      defaultValue: null,
     },
     plateCart: {
       type: Sequelize.STRING,
       allowNull: true,
+      defaultValue: null,
     },
     maintenanceDate: {
       type: Sequelize.DATE,

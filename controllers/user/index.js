@@ -2,6 +2,9 @@ const { hash } = require('bcrypt')
 const { omit, pathOr } = require('ramda')
 const database = require('../../database')
 const UserModel = database.model('user')
+const Sequelize = require('sequelize')
+const { Op } = Sequelize
+const { iLike } = Op
 
 const create = async (req, res, next) => {
   const companyId = pathOr(null, ['decoded', 'user', 'companyId'], req)
@@ -36,8 +39,24 @@ const getById = async (req, res, next) => {
 }
 
 const getAll = async (req, res, next) => {
+  const limit = pathOr(20, ['query', 'limit'], req)
+  const offset = pathOr(0, ['query', 'offset'], req)
+  const document = pathOr(null, ['query', 'document'], req)
+  const name = pathOr(null, ['query', 'name'], req)
+  const isDocument = document ? { document } : null
+  const isName = name ? { name: { [iLike]: '%' + name + '%' } } : null
+  let where = {}
+  
+  if (isDocument) {
+    where = isDocument
+  }
+
+  if (isName) {
+    where = isName
+  }
+  
   try {
-    const response = await UserModel.findAndCountAll()
+    const response = await UserModel.findAndCountAll({ where, limit, offset })
     res.json(response)
   } catch (error) {
     res.status(400).json({ error })

@@ -11,13 +11,15 @@ const { or, and } = Op
 const create = async (req, res, next) => {
   const userId = pathOr(null, ['decoded', 'user', 'id'], req)
   const companyId = pathOr(null, ['decoded', 'user', 'companyId'], req)
+  const plateHorse = pathOr(null, ['body', 'plateHorse'], req)
+  const plateCart = pathOr(null, ['body', 'plateHorse'], req)
 
   const transaction = await database.transaction()
   try {
     const findOrder = await MaintenanceOrderModel.findOne({ where: {
       [and]: [
-        { plateHorse: req.body.plateHorse },
-        { plateCart: req.body.plateCart },
+        { plateHorse },
+        { plateCart },
         { activated: true },
       ]
     }})
