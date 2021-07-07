@@ -13,7 +13,7 @@ const create = async (req, res, next) => {
     const payload = await MaintenanceOrderModel.create({...req.body, userId }, { include:[MaintenanceOrderEventModel, CompanyModel], transaction })
     const response = await MaintenanceOrderModel.findByPk(payload.id, { include:[MaintenanceOrderEventModel, CompanyModel], transaction })
     await MaintenanceOrderEventModel.create({ userId, companyId, maintenanceOrderId: payload.id }, { transaction })
-    await response.reload({ include: [MaintenanceOrderEventModel, CompanyModel]})
+    await response.reload({ include: [MaintenanceOrderEventModel, CompanyModel], transaction })
     await transaction.commit()
 
     res.json(response)
