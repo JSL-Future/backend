@@ -3,6 +3,10 @@ const database = require('../../database')
 const OperationModel = database.model('operation')
 const CompanyModel = database.model('company')
 
+const Sequelize = require('sequelize')
+const { Op } = Sequelize
+const { iLike } = Op
+
 const create = async (req, res, next) => {
   const userId = pathOr(null, ['decoded', 'user', 'id'], req)
 
@@ -40,8 +44,13 @@ const getById = async (req, res, next) => {
 }
 
 const getAll = async (req, res, next) => {
+  const limit = pathOr(20, ['query', 'limit'], req)
+  const offset = pathOr(0, ['query', 'offset'], req)
+  const name = pathOr(null, ['query', 'name'], req)
+  const where = name ? { name: { [iLike]: '%' + name + '%' } } : {}
+
   try {
-    const response = await OperationModel.findAll({ include: [CompanyModel] })
+    const response = await OperationModel.findAndCountAll({ where, include: [CompanyModel], limit, offset, })
     res.json(response)
   } catch (error) {
     res.status(400).json({ error })
