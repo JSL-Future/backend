@@ -1,6 +1,9 @@
 const { pathOr } = require('ramda')
 const database = require('../../database')
 const DriverModel = database.model('driver')
+const Sequelize = require('sequelize')
+const { Op } = Sequelize
+const { iLike } = Op
 
 const create = async (req, res, next) => {
   const userId = pathOr(null, ['decoded', 'user', 'id'], req)
@@ -36,8 +39,25 @@ const getById = async (req, res, next) => {
 }
 
 const getAll = async (req, res, next) => {
+  const limit = pathOr(20, ['query', 'limit'], req)
+  const offset = pathOr(0, ['query', 'offset'], req)
+  const driverLicense = pathOr(null, ['query', 'driverLicense'], req)
+  const name = pathOr(null, ['query', 'name'], req)
+  const isDriverLicense = driverLicense ? { driverLicense: { [iLike]: '%' + driverLicense + '%' } } : null
+  const isName = name ? { name: { [iLike]: '%' + name + '%' } } : null
+  let where = {}
+  
+  if (isDriverLicense) {
+    where = isDriverLicense
+  }
+
+  if (isName) {
+    where = isName
+  }
+
+
   try {
-    const response = await DriverModel.findAll({ include: [] })
+    const response = await DriverModel.findAll({ where, limit, offset })
     res.json(response)
   } catch (error) {
     res.status(400).json({ error })

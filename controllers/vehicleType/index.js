@@ -2,6 +2,10 @@ const { pathOr } = require('ramda')
 const database = require('../../database')
 const VehicleTypeModel = database.model('vehicleType')
 
+const Sequelize = require('sequelize')
+const { Op } = Sequelize
+const { iLike } = Op
+
 const create = async (req, res, next) => {
   const userId = pathOr(null, ['decoded', 'user', 'id'], req)
   const companyId = pathOr(null, ['decoded', 'user', 'companyId'], req)
