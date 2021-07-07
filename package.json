@@ -4,7 +4,7 @@
   "main": "index.js",
   "license": "MIT",
   "scripts": {
-    "start": "node ./bin/www",
+    "start": "yarn start ./bin/www",
     "migrate": "sequelize db:migrate",
     "migrate:undo": "sequelize db:migrate:undo:all",
     "build": "sequelize db:migrate --url $DATABASE_URL"
