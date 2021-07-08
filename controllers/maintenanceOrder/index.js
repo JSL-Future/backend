@@ -4,6 +4,7 @@ const MaintenanceOrderModel = database.model('maintenanceOrder')
 const MaintenanceOrderEventModel = database.model('maintenanceOrderEvent')
 const SupplyModel = database.model('supply')
 const CompanyModel = database.model('company')
+const DriverModel = database.model('driver')
 const Sequelize = require('sequelize')
 const { Op } = Sequelize
 const { or, and } = Op
