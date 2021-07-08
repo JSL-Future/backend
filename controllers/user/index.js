@@ -65,7 +65,7 @@ const getAll = async (req, res, next) => {
 
 const updatePassword = async (req, res, next) => {
   const userId = pathOr(null, ['decoded', 'user', 'id'], req)
-  const password = await hash(req.body.newPassword, 10)
+
   try {
     const findUser = await UserModel.findByPk(userId)
     const checkedPassword = await compare(req.body.password, findUser.password)
@@ -74,12 +74,14 @@ const updatePassword = async (req, res, next) => {
       throw new Error('Username or password do not match')
     }
 
+    const password = await hash(req.body.newPassword, 10)
+  
     await findUser.update({ password })
     await findUser.reload()
 
     res.json(findUser)
   } catch (error) {
-    res.status(400).json({ error })
+    res.status(400).json({ error: error.message })
   }
 }
 
