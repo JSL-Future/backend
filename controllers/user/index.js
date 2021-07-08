@@ -64,9 +64,10 @@ const getAll = async (req, res, next) => {
 }
 
 const updatePassword = async (req, res, next) => {
-  const password = await hash(req.body.password, 10)
+  const userId = pathOr(null, ['decoded', 'user', 'id'], req)
+  const password = await hash(req.body.newPassword, 10)
   try {
-    const findUser = await UserModel.findByPk(req.body.id)
+    const findUser = await UserModel.findByPk(userId)
     const checkedPassword = await compare(req.body.password, findUser.password)
 
     if(!checkedPassword) {
