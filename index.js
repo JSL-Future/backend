@@ -7,6 +7,7 @@ const app = Express()
 
 const AuthenticationRoutes = require('./routes/authentication')
 const { AuthenticationController } = require('./controllers')
+const { getByIdMobile } = require('./controllers/maintenanceOrder')
 
 const companyRoutes = require('./routes/company')
 const userRoutes = require('./routes/user')
@@ -27,6 +28,7 @@ app.use(bodyParser.json())
 app.use(bodyParser.json({ type: 'application/json' }))
 app.use(bodyParser.urlencoded({ extended: true }))
 
+app.use('/qrcode-detail/:id', getByIdMobile)
 app.use('/auth', AuthenticationRoutes)
 app.use(baseUrl, AuthenticationController.checkToken)
 app.use(baseUrl, companyRoutes)

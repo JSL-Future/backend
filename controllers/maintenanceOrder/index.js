@@ -150,10 +150,20 @@ const createEventToMaintenanceOrder =  async (req, res, next) => {
   }
 }
 
+const getByIdMobile = async (req, res, next) => {
+  try {
+    const response = await MaintenanceOrderModel.findByPk(req.params.id, { include: [CompanyModel]})
+    res.json(response)
+  } catch (error) {
+    res.status(400).json({ error })
+  }
+}
+
 module.exports = {
   create,
   update,
   getById,
   getAll,
   createEventToMaintenanceOrder,
+  getByIdMobile,
 }
