@@ -8,6 +8,19 @@ const Sequelize = require('sequelize')
 const { Op } = Sequelize
 const { or, and } = Op
 
+const statusQuantityAllow = {
+  'solicitation': 1,
+  'check-in': 1,
+  'avaiable': 1,
+  'parking': 1,
+  'courtyard': 10,
+  'awaiting_repair': 10,
+  'dock': 10,
+  'wash': 1,
+  'supply': 2,
+  'check-out': 1,
+}
+
 const create = async (req, res, next) => {
   const userId = pathOr(null, ['decoded', 'user', 'id'], req)
   const companyId = pathOr(null, ['decoded', 'user', 'companyId'], req)
@@ -97,6 +110,12 @@ const createEventToMaintenanceOrder =  async (req, res, next) => {
   try { 
     const findDriver = await DriverModel.findByPk(driverId)
     const response = await MaintenanceOrderModel.findByPk(maintenanceOrderId, { include: [MaintenanceOrderEventModel], transaction })
+    const eventsCreated = await MaintenanceOrderEventModel.count({ where: { status, maintenanceOrderId }})
+    
+    if (eventsCreated === statusQuantityAllow[status]) {
+      throw new Error(`Allow only ${statusQuantityAllow[status]} to the event ${status}`)
+    }
+    
     await MaintenanceOrderEventModel.create({ userId, companyId, maintenanceOrderId, status }, { transaction })
 
     if (status === 'check-out' && response.driverMainLicense !== findDriver.driverLicense) {
