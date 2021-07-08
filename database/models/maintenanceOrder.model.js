@@ -70,6 +70,7 @@ const MaintenanceOrder = (sequelize) => {
     },
     status: {
       type: Sequelize.ENUM([
+        'cancel',
         'solicitation',
         'check-in',
         'avaiable',

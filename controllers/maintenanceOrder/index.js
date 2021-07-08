@@ -10,10 +10,11 @@ const { Op } = Sequelize
 const { or, and } = Op
 
 const statusQuantityAllow = {
+  'cancel': 1,
   'solicitation': 1,
   'check-in': 1,
   'avaiable': 1,
-  'parking': 1,
+  'parking': 4,
   'courtyard': 10,
   'awaiting_repair': 10,
   'dock': 10,
