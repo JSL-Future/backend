@@ -69,7 +69,7 @@ const update = async (req, res, next) => {
 
 const getById = async (req, res, next) => {
   try {
-    const response = await MaintenanceOrderModel.findByPk(req.params.id, { include: [CompanyModel, MaintenanceOrderEventModel]})
+    const response = await MaintenanceOrderModel.findByPk(req.params.id, { include: [CompanyModel, MaintenanceOrderEventModel, SupplyModel]})
     res.json(response)
   } catch (error) {
     res.status(400).json({ error })
@@ -111,7 +111,7 @@ const createEventToMaintenanceOrder =  async (req, res, next) => {
 
   try { 
     const findDriver = await DriverModel.findByPk(driverId)
-    const response = await MaintenanceOrderModel.findByPk(maintenanceOrderId, { include: [MaintenanceOrderEventModel], transaction })
+    const response = await MaintenanceOrderModel.findByPk(maintenanceOrderId, { include: [MaintenanceOrderEventModel, SupplyModel], transaction })
     const eventsCreated = await MaintenanceOrderEventModel.count({ where: { status, maintenanceOrderId }})
     
     if (eventsCreated === statusQuantityAllow[status]) {
