@@ -94,7 +94,7 @@ const MaintenanceOrder = (sequelize) => {
       }
     })
 
-    models.maintenanceOrder.hasMany(models.driver, {
+    models.maintenanceOrder.hasMany(models.maintenanceOrderDriver, {
       foreignKey: {
         allowNull: false,
       }
