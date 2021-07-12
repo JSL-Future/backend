@@ -145,7 +145,9 @@ const createEventToMaintenanceOrder =  async (req, res, next) => {
         activated: false,
       }
       const fincVehicle = await VehicleModel.findOne({ where: { plate: response.plateCart }, transaction })
-      await fincVehicle.update({ lastMaintenance: new Date() }, { transaction })
+      if (fincVehicle) {
+        await fincVehicle.update({ lastMaintenance: new Date() }, { transaction })
+      }
     }
 
     if (status === 'supply') {
