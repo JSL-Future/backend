@@ -12,30 +12,6 @@ module.exports = {
       allowNull: false,
       defaultValue: true,
     },
-    driverMain:{
-      type: Sequelize.STRING,
-      allowNull: false,
-    },
-    driverPhoneMain:{
-      type: Sequelize.STRING,
-      allowNull: false,
-    },
-    driverMainLicense: {
-      type: Sequelize.STRING,
-      allowNull: false,
-    },
-    driverSecondaryLicense: {
-      type: Sequelize.STRING,
-      allowNull: true,
-    },
-    driverPhoneSecondary:{
-      type: Sequelize.STRING,
-      allowNull: true,
-    },
-    driverSecondary:{
-      type: Sequelize.STRING,
-      allowNull: true,
-    },
     plateHorse: {
       type: Sequelize.STRING,
       allowNull: true,
