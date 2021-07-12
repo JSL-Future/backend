@@ -1,7 +1,7 @@
-const DB_USERNAME = 'postgres'
-const DB_HOST = 'localhost'
-const DB_NAME = 'jsl-postgres'
-const DB_PWD = 'postgres'
+const DB_USERNAME = process.env.DB_USERNAME || 'postgres'
+const DB_HOST = process.env.DB_HOST || 'localhost'
+const DB_NAME = process.env.DB_NAME || 'jsl-postgres'
+const DB_PWD = process.env.DB_PWD || 'postgres'
 
 module.exports = {
   development: {
