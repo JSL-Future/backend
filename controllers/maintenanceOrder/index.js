@@ -259,7 +259,7 @@ const getByPlate = async (req, res, next) => {
   } : { }
 
   try {
-    const response = await MaintenanceOrderModel.findOne({ where, include: [CompanyModel]})
+    const response = await MaintenanceOrderModel.findAll({ where, include: [CompanyModel]})
     if(!response) {
       throw new Error('cannot find order!')
     }
