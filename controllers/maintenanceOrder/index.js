@@ -74,7 +74,7 @@ const getById = async (req, res, next) => {
       CompanyModel, 
       MaintenanceOrderEventModel, 
       SupplyModel,
-      OperationModel
+      { model: OperationModel, include: [CompanyModel] }
     ]})
     res.json(response)
   } catch (error) {
