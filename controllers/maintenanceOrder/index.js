@@ -6,9 +6,10 @@ const SupplyModel = database.model('supply')
 const CompanyModel = database.model('company')
 const DriverModel = database.model('driver')
 const OperationModel = database.model('operation')
+const VehicleModel = database.model('vehicle')
 const Sequelize = require('sequelize')
 const { Op } = Sequelize
-const { or, and, iLike, eq } = Op
+const { or, iLike, eq } = Op
 
 const statusQuantityAllow = {
   'cancel': 1,
@@ -143,6 +144,8 @@ const createEventToMaintenanceOrder =  async (req, res, next) => {
         ...payload,
         activated: false,
       }
+      const fincVehicle = await VehicleModel.findOne({ where: { plateCart: response.plateCart }, transaction })
+      await fincVehicle.update({ lastMaintenance: new Date() }, { transaction })
     }
 
     if (status === 'supply') {
