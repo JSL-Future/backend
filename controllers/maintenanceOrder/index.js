@@ -8,7 +8,7 @@ const DriverModel = database.model('driver')
 const OperationModel = database.model('operation')
 const Sequelize = require('sequelize')
 const { Op } = Sequelize
-const { or, and } = Op
+const { or, and, iLike, eq } = Op
 
 const statusQuantityAllow = {
   'cancel': 1,
@@ -88,9 +88,13 @@ const getAll = async (req, res, next) => {
   const plate = pathOr(null, ['query', 'plate'], req)
   const isPlate = plate ? {
     [or]: [
-      { plateHorse: plate },
-      { plateCart: plate }
-    ]
+      { plateCart: {
+        [iLike]: '%' + plate.replace(/\D/g, '') + '%'
+      } },
+      { plateHorse: {
+        [iLike]: '%' + plate.replace(/\D/g, '') + '%'
+      } },
+    ],
   } : null
   let where = {}
 
@@ -131,7 +135,8 @@ const createEventToMaintenanceOrder =  async (req, res, next) => {
         ...payload,
         driverPhoneSecondary: findDriver.phone,
         driverSecondary: findDriver.name,
-        driverSecondaryLicense: findDriver.driverLicense
+        driverSecondaryLicense: findDriver.driverLicense,
+        activated: false
       }
     }
 
@@ -235,6 +240,35 @@ const getSummaryOrderByOperation = async (req, res, next) => {
   }
 }
 
+const getByPlate = async (req, res, next) => {
+  const plate = pathOr(null, ['query', 'plate'], req)
+  const where = plate ? {
+    [or]: [
+      { 
+        plateCart: {
+          [eq]: plate
+        },
+      },
+      { 
+        plateHorse: {
+          [eq]: plate
+        },
+      },
+    ],
+    activated: true,
+  } : { }
+
+  try {
+    const response = await MaintenanceOrderModel.findOne({ where, include: [CompanyModel]})
+    if(!response) {
+      throw new Error('cannot find order!')
+    }
+    res.json(response)
+  } catch (error) {
+    res.status(400).json({ error: error.message })
+  }
+}
+
 module.exports = {
   create,
   update,
@@ -244,5 +278,6 @@ module.exports = {
   getByIdMobile,
   getSummaryOrderByStatus,
   getSummaryOrderByCompany,
-  getSummaryOrderByOperation
+  getSummaryOrderByOperation,
+  getByPlate,
 }
