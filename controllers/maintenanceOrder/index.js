@@ -74,6 +74,7 @@ const getById = async (req, res, next) => {
       CompanyModel, 
       MaintenanceOrderEventModel, 
       SupplyModel,
+      { model: MaintenanceOrderDriverModel, include: [DriverModel]},
       { model: OperationModel, include: [CompanyModel] }
     ]})
     res.json(response)
