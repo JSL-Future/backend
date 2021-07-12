@@ -5,6 +5,7 @@ const MaintenanceOrderEventModel = database.model('maintenanceOrderEvent')
 const SupplyModel = database.model('supply')
 const CompanyModel = database.model('company')
 const DriverModel = database.model('driver')
+const OperationModel = database.model('operation')
 const Sequelize = require('sequelize')
 const { Op } = Sequelize
 const { or, and } = Op
@@ -159,6 +160,76 @@ const getByIdMobile = async (req, res, next) => {
   }
 }
 
+const getSummaryOrderByStatus = async (req, res, next) => {
+  try {
+    const response = await MaintenanceOrderModel.findAll({ 
+      attributes: [
+        'status',
+        [
+          Sequelize.fn('date_trunc', 'day', Sequelize.col('createdAt')),
+          'name'
+        ],
+        [Sequelize.fn('COUNT', Sequelize.col('createdAt')), 'count']
+      ],
+      group: [
+        Sequelize.fn('date_trunc', 'day', Sequelize.col('createdAt')),
+        'status'
+      ],
+    })
+    res.json(response)
+  } catch (error) {
+    res.status(400).json({ error: error.message })
+  }
+}
+
+const getSummaryOrderByCompany = async (req, res, next) => {
+  try {
+    const response = await MaintenanceOrderModel.findAll({ 
+      include: [CompanyModel],
+      attributes: [
+        'status',
+        [
+          Sequelize.fn('date_trunc', 'day', Sequelize.col('maintenanceOrder.createdAt')),
+          'name'
+        ],
+        [Sequelize.fn('COUNT', Sequelize.col('maintenanceOrder.createdAt')), 'count']
+      ],
+      group: [
+        Sequelize.fn('date_trunc', 'day', Sequelize.col('maintenanceOrder.createdAt')),
+        'status',
+        'company.id'
+      ],
+    })
+    res.json(response)
+  } catch (error) {
+    res.status(400).json({ error: error.message })
+  }
+}
+
+const getSummaryOrderByOperation = async (req, res, next) => {
+  try {
+    const response = await MaintenanceOrderModel.findAll({ 
+      include: [OperationModel],
+      attributes: [
+        'status',
+        [
+          Sequelize.fn('date_trunc', 'day', Sequelize.col('maintenanceOrder.createdAt')),
+          'name'
+        ],
+        [Sequelize.fn('COUNT', Sequelize.col('maintenanceOrder.createdAt')), 'count']
+      ],
+      group: [
+        Sequelize.fn('date_trunc', 'day', Sequelize.col('maintenanceOrder.createdAt')),
+        'status',
+        'operation.id'
+      ],
+    })
+    res.json(response)
+  } catch (error) {
+    res.status(400).json({ error: error.message })
+  }
+}
+
 module.exports = {
   create,
   update,
@@ -166,4 +237,7 @@ module.exports = {
   getAll,
   createEventToMaintenanceOrder,
   getByIdMobile,
+  getSummaryOrderByStatus,
+  getSummaryOrderByCompany,
+  getSummaryOrderByOperation
 }
