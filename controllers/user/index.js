@@ -1,4 +1,4 @@
-const { hash } = require('bcrypt')
+const { hash, compare } = require('bcrypt')
 const { omit, pathOr } = require('ramda')
 const database = require('../../database')
 const UserModel = database.model('user')
