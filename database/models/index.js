@@ -17,8 +17,8 @@ module.exports = [
   VehicleType,
   Vehicle,
   Driver,
+  MaintenanceOrderDriver,
   MaintenanceOrderEvent,
   Supply,
   MaintenanceOrder,
-  MaintenanceOrderDriver
 ]
