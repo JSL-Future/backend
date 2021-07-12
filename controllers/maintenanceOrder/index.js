@@ -33,15 +33,13 @@ const create = async (req, res, next) => {
   const transaction = await database.transaction()
   try {
     const findOrder = await MaintenanceOrderModel.findOne({ where: {
-      [and]: [
-        { plateHorse },
-        { plateCart },
-        { activated: true },
-      ]
-    }})
+        plateCart,
+        activated: true
+      },
+    })
 
     if (findOrder) {
-      throw new Error ('Allow only one order for these plates!')
+      throw new Error ('Allow only one order for this plate!')
     }
 
     const payload = await MaintenanceOrderModel.create({...req.body, userId }, { include:[MaintenanceOrderEventModel, CompanyModel], transaction })
@@ -244,23 +242,14 @@ const getSummaryOrderByOperation = async (req, res, next) => {
 const getByPlate = async (req, res, next) => {
   const plate = pathOr(null, ['query', 'plate'], req)
   const where = plate ? {
-    [or]: [
-      { 
-        plateCart: {
-          [eq]: plate
-        },
-      },
-      { 
-        plateHorse: {
-          [eq]: plate
-        },
-      },
-    ],
+    plateCart: {
+      [eq]: plate
+    },
     activated: true,
   } : { }
 
   try {
-    const response = await MaintenanceOrderModel.findAll({ where, include: [CompanyModel]})
+    const response = await MaintenanceOrderModel.findOne({ where, include: [CompanyModel]})
     if(!response) {
       throw new Error('cannot find order!')
     }
