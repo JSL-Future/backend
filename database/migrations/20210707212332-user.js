@@ -20,6 +20,11 @@ module.exports = {
       type: Sequelize.STRING,
       allowNull: false,
     },
+    activated: {
+      type: Sequelize.BOOLEAN,
+      allowNull: false,
+      defaultValue: true
+    },
     companyId: {
       type: Sequelize.UUID,
       references: {

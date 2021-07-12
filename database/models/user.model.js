@@ -20,6 +20,11 @@ const User = (sequelize) => {
       type: Sequelize.STRING,
       allowNull: false,
     },
+    activated: {
+      type: Sequelize.BOOLEAN,
+      allowNull: false,
+      defaultValue: true
+    }
   })
   
   User.associate = (models) => {

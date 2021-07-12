@@ -10,7 +10,7 @@ module.exports = {
     driverId: {
       type: Sequelize.UUID,
       references: {
-        model: 'users',
+        model: 'drivers',
         key: 'id',
       },
       onUpdate: 'cascade',
