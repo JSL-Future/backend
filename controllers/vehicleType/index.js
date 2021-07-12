@@ -46,7 +46,7 @@ const getAll = async (req, res, next) => {
   const where = name ? { name: { [iLike]: '%' + name + '%' } } : {}
 
   try {
-    const response = await VehicleTypeModel.findAndCountAll({ where, limit, offset, })
+    const response = await VehicleTypeModel.findAndCountAll({ where, limit, offset: (offset * limit), })
     res.json(response)
   } catch (error) {
     res.status(400).json({ error })

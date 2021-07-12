@@ -23,7 +23,7 @@ const getAll = async (req, res, next) => {
   }
 
   try {
-    const response = await CompanyModel.findAndCountAll({ where, limit, offset })
+    const response = await CompanyModel.findAndCountAll({ where, limit, offset: (offset * limit) })
     res.json(response)
   } catch (error) {
     res.status(404).json(error)

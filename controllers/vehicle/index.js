@@ -59,7 +59,7 @@ const getAll = async (req, res, next) => {
 
   try {
     const count = await VehicleModel.count({ where })
-    const response = await VehicleModel.findAndCountAll({ where, include: [VehicleTypeModel], offset, limit })
+    const response = await VehicleModel.findAndCountAll({ where, include: [VehicleTypeModel], offset: (offset * limit), limit })
     res.json({...response, count })
   } catch (error) {
     res.status(400).json({ error })
