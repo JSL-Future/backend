@@ -70,7 +70,12 @@ const update = async (req, res, next) => {
 
 const getById = async (req, res, next) => {
   try {
-    const response = await MaintenanceOrderModel.findByPk(req.params.id, { include: [CompanyModel, MaintenanceOrderEventModel, SupplyModel]})
+    const response = await MaintenanceOrderModel.findByPk(req.params.id, { include: [
+      CompanyModel, 
+      MaintenanceOrderEventModel, 
+      SupplyModel,
+      OperationModel
+    ]})
     res.json(response)
   } catch (error) {
     res.status(400).json({ error })
