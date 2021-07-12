@@ -50,8 +50,9 @@ const getAll = async (req, res, next) => {
   const where = name ? { name: { [iLike]: '%' + name + '%' } } : {}
 
   try {
+    const count = await OperationModel.count({ where })
     const response = await OperationModel.findAndCountAll({ where, include: [CompanyModel], limit, offset, })
-    res.json(response)
+    res.json({...response, count })
   } catch (error) {
     res.status(400).json({ error })
   }

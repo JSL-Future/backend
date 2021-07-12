@@ -103,8 +103,9 @@ const getAll = async (req, res, next) => {
   }
 
   try {
+    const count = await MaintenanceOrderModel.count({ where })
     const response = await MaintenanceOrderModel.findAndCountAll({ where, include: [CompanyModel, MaintenanceOrderEventModel], offset, limit })
-    res.json(response)
+    res.json({...response, count })
   } catch (error) {
     res.status(400).json({ error })
   }
