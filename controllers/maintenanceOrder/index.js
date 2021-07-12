@@ -2,6 +2,7 @@ const { pathOr } = require('ramda')
 const database = require('../../database')
 const MaintenanceOrderModel = database.model('maintenanceOrder')
 const MaintenanceOrderEventModel = database.model('maintenanceOrderEvent')
+const MaintenanceOrderDriverModel = database.model('maintenanceOrderDriver')
 const SupplyModel = database.model('supply')
 const CompanyModel = database.model('company')
 const DriverModel = database.model('driver')
@@ -44,6 +45,7 @@ const create = async (req, res, next) => {
 
     const payload = await MaintenanceOrderModel.create({...req.body, userId }, { include:[MaintenanceOrderEventModel, CompanyModel], transaction })
     const response = await MaintenanceOrderModel.findByPk(payload.id, { include:[MaintenanceOrderEventModel, CompanyModel], transaction })
+    await MaintenanceOrderDriverModel.create({ maintenanceOrderId: payload.id, driverId: req.body.driverId }, { transaction })
     await MaintenanceOrderEventModel.create({ userId, companyId, maintenanceOrderId: payload.id }, { transaction })
     await response.reload({ include: [MaintenanceOrderEventModel, CompanyModel], transaction })
     await transaction.commit()
@@ -59,7 +61,7 @@ const update = async (req, res, next) => {
   try {
     const findUser = await MaintenanceOrderModel.findByPk(req.params.id, { include: [CompanyModel, MaintenanceOrderEventModel]})
     await findUser.update(req.body)
-    const response = await findUser.reload({ include: [CompanyModel, MaintenanceOrderEventModel]})
+    const response = await findUser.reload({ include: [CompanyModel, MaintenanceOrderEventModel, { model: MaintenanceOrderDriverModel, include: [DriverModel]}]})
     res.json(response)
   } catch (error) {
     res.status(400).json({ error })
@@ -102,7 +104,7 @@ const getAll = async (req, res, next) => {
 
   try {
     const count = await MaintenanceOrderModel.count({ where })
-    const response = await MaintenanceOrderModel.findAndCountAll({ where, include: [CompanyModel, MaintenanceOrderEventModel], offset, limit })
+    const response = await MaintenanceOrderModel.findAndCountAll({ where, include: [CompanyModel, MaintenanceOrderEventModel, { model: MaintenanceOrderDriverModel, include: [DriverModel] }], offset, limit })
     res.json({...response, count })
   } catch (error) {
     res.status(400).json({ error })
@@ -120,7 +122,7 @@ const createEventToMaintenanceOrder =  async (req, res, next) => {
 
   try { 
     const findDriver = await DriverModel.findByPk(driverId)
-    const response = await MaintenanceOrderModel.findByPk(maintenanceOrderId, { include: [MaintenanceOrderEventModel, SupplyModel], transaction })
+    const response = await MaintenanceOrderModel.findByPk(maintenanceOrderId, { include: [MaintenanceOrderEventModel, SupplyModel, { model: MaintenanceOrderDriverModel, include:[DriverModel]}], transaction })
     const eventsCreated = await MaintenanceOrderEventModel.count({ where: { status, maintenanceOrderId }})
     
     if (eventsCreated === statusQuantityAllow[status]) {
@@ -128,15 +130,9 @@ const createEventToMaintenanceOrder =  async (req, res, next) => {
     }
     
     await MaintenanceOrderEventModel.create({ userId, companyId, maintenanceOrderId, status }, { transaction })
-
-    if (status === 'check-out' && response.driverMainLicense !== findDriver.driverLicense) {
-      payload = {
-        ...payload,
-        driverPhoneSecondary: findDriver.phone,
-        driverSecondary: findDriver.name,
-        driverSecondaryLicense: findDriver.driverLicense,
-        activated: false
-      }
+    const driverIsMatch = findDriver.find(driver => driver.id === findDriver.id) 
+    if (status === 'check-out' && !driverIsMatch) {
+      await MaintenanceOrderDriverModel.create({ maintenanceOrderId: payload.id, driverId: req.body.driverId }, { transaction })
     }
 
     if (status === 'check-out') {
@@ -166,7 +162,7 @@ const createEventToMaintenanceOrder =  async (req, res, next) => {
 
 const getByIdMobile = async (req, res, next) => {
   try {
-    const response = await MaintenanceOrderModel.findByPk(req.params.id, { include: [CompanyModel]})
+    const response = await MaintenanceOrderModel.findByPk(req.params.id, { include: [CompanyModel, { model: MaintenanceOrderDriverModel, include: [DriverModel]}]})
     res.json(response)
   } catch (error) {
     res.status(400).json({ error })
@@ -253,7 +249,7 @@ const getByPlate = async (req, res, next) => {
   } : { }
 
   try {
-    const response = await MaintenanceOrderModel.findOne({ where, include: [CompanyModel]})
+    const response = await MaintenanceOrderModel.findOne({ where, include: [CompanyModel, { model: MaintenanceOrderDriverModel, include: [DriverModel] }]})
     if(!response) {
       throw new Error('cannot find order!')
     }

@@ -12,30 +12,6 @@ const MaintenanceOrder = (sequelize) => {
       allowNull: false,
       defaultValue: true,
     },
-    driverMain:{
-      type: Sequelize.STRING,
-      allowNull: false,
-    },
-    driverPhoneMain:{
-      type: Sequelize.STRING,
-      allowNull: false,
-    },
-    driverMainLicense: {
-      type: Sequelize.STRING,
-      allowNull: false,
-    },
-    driverSecondaryLicense: {
-      type: Sequelize.STRING,
-      allowNull: true,
-    },
-    driverPhoneSecondary:{
-      type: Sequelize.STRING,
-      allowNull: true,
-    },
-    driverSecondary:{
-      type: Sequelize.STRING,
-      allowNull: true,
-    },
     plateHorse: {
       type: Sequelize.STRING,
       allowNull: true,
@@ -113,6 +89,12 @@ const MaintenanceOrder = (sequelize) => {
     })
 
     models.maintenanceOrder.hasMany(models.supply, {
+      foreignKey: {
+        allowNull: false,
+      }
+    })
+
+    models.maintenanceOrder.hasMany(models.driver, {
       foreignKey: {
         allowNull: false,
       }

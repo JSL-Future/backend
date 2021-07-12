@@ -6,6 +6,8 @@ const Vehicle = require('./vehicle.model')
 const Driver = require('./driver.model')
 const MaintenanceOrder = require('./maintenanceOrder.model')
 const MaintenanceOrderEvent = require('./maintenanceOrderEvent.model')
+const MaintenanceOrderDriver = require('./maintenanceOrderDriver.model')
+
 const Supply = require('./supply.model')
 
 module.exports = [
@@ -17,5 +19,6 @@ module.exports = [
   Driver,
   MaintenanceOrderEvent,
   Supply,
-  MaintenanceOrder
+  MaintenanceOrder,
+  MaintenanceOrderDriver
 ]
