@@ -144,7 +144,7 @@ const createEventToMaintenanceOrder =  async (req, res, next) => {
         ...payload,
         activated: false,
       }
-      const fincVehicle = await VehicleModel.findOne({ where: { plateCart: response.plateCart }, transaction })
+      const fincVehicle = await VehicleModel.findOne({ where: { plate: response.plateCart }, transaction })
       await fincVehicle.update({ lastMaintenance: new Date() }, { transaction })
     }
 
