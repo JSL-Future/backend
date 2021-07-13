@@ -34,6 +34,12 @@ const Driver = (sequelize) => {
         allowNull: false,
       }
     })
+
+    models.driver.hasMany(models.driverIncident, {
+      foreignKey: {
+        allowNull: false,
+      }
+    })
   }
 
   return Driver

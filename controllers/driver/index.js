@@ -1,6 +1,11 @@
 const { pathOr } = require('ramda')
 const database = require('../../database')
 const DriverModel = database.model('driver')
+const DriverIncidentModel = database.model('driverIncident')
+const CompanyModel = database.model('company')
+const UserModel = database.model('user')
+const OperationModel = database.model('operation')
+
 const Sequelize = require('sequelize')
 const { Op } = Sequelize
 const { iLike } = Op
@@ -31,7 +36,10 @@ const update = async (req, res, next) => {
 
 const getById = async (req, res, next) => {
   try {
-    const response = await DriverModel.findByPk(req.params.id, { include: [] })
+    const response = await DriverModel.findByPk(req.params.id, { include: [{
+      model: DriverIncidentModel,
+      include: [OperationModel, CompanyModel, UserModel, VehicleModel, DriverModel]
+    }] })
     res.json(response)
   } catch (error) {
     res.status(400).json({ error })
@@ -63,9 +71,26 @@ const getAll = async (req, res, next) => {
   }
 }
 
+const createIncident = async (req, res, next) => {
+  const userId = pathOr(null, ['decoded', 'user', 'id'], req)
+  const companyId = pathOr(null, ['decoded', 'user', 'companyId'], req)
+
+  try {
+    const response = await DriverIncidentModel.create({...req.body, userId, companyId }, { include: [{
+      model: DriverIncidentModel,
+      include: [OperationModel, CompanyModel, UserModel, VehicleModel, DriverModel]
+    }] })
+    res.json(response)
+  } catch (error) {
+    
+    res.status(400).json({ error: error.message })
+  }
+}
+
 module.exports = {
   create,
   update,
   getById,
   getAll,
+  createIncident,
 }
