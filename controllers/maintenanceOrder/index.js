@@ -131,7 +131,7 @@ const createEventToMaintenanceOrder =  async (req, res, next) => {
     }
     
     await MaintenanceOrderEventModel.create({ userId, companyId, maintenanceOrderId, status }, { transaction })
-    const driverIsMatch = findDriver.find(driver => driver.id === findDriver.id) 
+    const driverIsMatch = findDriver && findDriver.find(driver => driver.id === findDriver.id) 
     if (status === 'check-out' && !driverIsMatch) {
       await MaintenanceOrderDriverModel.create({ maintenanceOrderId: payload.id, driverId: req.body.driverId }, { transaction })
     }
