@@ -232,7 +232,7 @@ const getSummaryOrderByOperation = async (req, res, next) => {
         Sequelize.fn('date_trunc', 'day', Sequelize.col('maintenanceOrder.createdAt')),
         'status',
         'operation.id',
-        'company.id'
+        'operation.company.id'
       ],
     })
     res.json(response)
