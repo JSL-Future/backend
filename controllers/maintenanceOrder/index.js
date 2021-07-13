@@ -29,7 +29,7 @@ const statusQuantityAllow = {
 const create = async (req, res, next) => {
   const userId = pathOr(null, ['decoded', 'user', 'id'], req)
   const companyId = pathOr(null, ['decoded', 'user', 'companyId'], req)
-  const plateCart = pathOr(null, ['body', 'plateHorse'], req)
+  const plateCart = pathOr(null, ['body', 'plateCart'], req)
 
   const transaction = await database.transaction()
   try {
