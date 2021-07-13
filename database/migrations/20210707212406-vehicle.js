@@ -15,7 +15,6 @@ module.exports = {
     fleet: {
       type: Sequelize.STRING,
       allowNull: false,
-      unique: true,
     },
     preventiveMaintenanceLimite: {
       type: Sequelize.INTEGER,
