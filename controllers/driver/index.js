@@ -97,11 +97,16 @@ const getIncidentsSummary = async (req, res, next) => {
     const response = await DriverIncidentModel.findAll({ 
       where: { driverId },
       attributes: [
-        'incidentType', 'driverId'
-        [Sequelize.fn('COUNT', Sequelize.col('incidentType')), 'count']
+        'incidentType',
+        [
+          Sequelize.fn('date_trunc', 'day', Sequelize.col('createdAt')),
+          'name'
+        ],
+        [Sequelize.fn('COUNT', Sequelize.col('createdAt')), 'count']
       ],
       group: [
-        'driverId'
+        Sequelize.fn('date_trunc', 'day', Sequelize.col('createdAt')),
+        'incidentType'
       ],
     })
     res.json(response)
