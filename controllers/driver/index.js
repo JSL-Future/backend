@@ -77,10 +77,7 @@ const createIncident = async (req, res, next) => {
   const companyId = pathOr(null, ['decoded', 'user', 'companyId'], req)
 
   try {
-    const response = await DriverIncidentModel.create({...req.body, userId, companyId }, { include: [{
-      model: DriverIncidentModel,
-      include: [OperationModel, CompanyModel, UserModel, VehicleModel, DriverModel]
-    }] })
+    const response = await DriverIncidentModel.create({...req.body, userId, companyId }, { include: [OperationModel, CompanyModel, UserModel, VehicleModel, DriverModel] })
     res.json(response)
   } catch (error) {
     
