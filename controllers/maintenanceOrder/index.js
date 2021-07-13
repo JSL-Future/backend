@@ -219,7 +219,7 @@ const getSummaryOrderByCompany = async (req, res, next) => {
 const getSummaryOrderByOperation = async (req, res, next) => {
   try {
     const response = await MaintenanceOrderModel.findAll({ 
-      include: [OperationModel],
+      include: [{ model: OperationModel, include: [CompanyModel] }],
       attributes: [
         'status',
         [
