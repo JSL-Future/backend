@@ -1,7 +1,7 @@
 'use strict';
 
 module.exports = {
-  up: (queryInterface, Sequelize) => queryInterface.createTable('driverIncident', {
+  up: (queryInterface, Sequelize) => queryInterface.createTable('driverIncidents', {
     id: {
       type: Sequelize.UUID,
       defaultValue: Sequelize.UUIDV4,
@@ -78,5 +78,5 @@ module.exports = {
       allowNull: false,
     },
   }),
-  down: (queryInterface) => queryInterface.dropTable('driverIncident')
+  down: (queryInterface) => queryInterface.dropTable('driverIncidents')
 };
