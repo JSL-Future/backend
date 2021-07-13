@@ -39,7 +39,12 @@ const getById = async (req, res, next) => {
   try {
     const response = await DriverModel.findByPk(req.params.id, { include: [{
       model: DriverIncidentModel,
-      include: [OperationModel, CompanyModel, UserModel, VehicleModel]
+      include: [
+        { model: OperationModel, include: [CompanyModel] }, 
+        CompanyModel,
+        UserModel,
+        VehicleModel
+      ]
     }] })
     res.json(response)
   } catch (error) {
