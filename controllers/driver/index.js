@@ -90,10 +90,31 @@ const createIncident = async (req, res, next) => {
   }
 }
 
+const getIncidentsSummary = async (req, res, next) => {
+  const driverId = pathOr(null, ['params', 'id'], req)
+
+  try {
+    const response = await DriverIncidentModel.findAll({ 
+      where: { driverId },
+      attributes: [
+        'incidentType', 'driverId'
+        [Sequelize.fn('COUNT', Sequelize.col('incidentType')), 'count']
+      ],
+      group: [
+        'driverId'
+      ],
+    })
+    res.json(response)
+  } catch (error) {
+    res.status(400).json({ error: error.message })
+  }
+}
+
 module.exports = {
   create,
   update,
   getById,
   getAll,
   createIncident,
+  getIncidentsSummary,
 }
