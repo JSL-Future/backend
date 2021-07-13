@@ -5,6 +5,7 @@ const DriverIncidentModel = database.model('driverIncident')
 const CompanyModel = database.model('company')
 const UserModel = database.model('user')
 const OperationModel = database.model('operation')
+const VehicleModel = database.model('vehicle')
 
 const Sequelize = require('sequelize')
 const { Op } = Sequelize
@@ -38,11 +39,11 @@ const getById = async (req, res, next) => {
   try {
     const response = await DriverModel.findByPk(req.params.id, { include: [{
       model: DriverIncidentModel,
-      include: [OperationModel, CompanyModel, UserModel, VehicleModel, DriverModel]
+      include: [OperationModel, CompanyModel, UserModel, VehicleModel]
     }] })
     res.json(response)
   } catch (error) {
-    res.status(400).json({ error })
+    res.status(400).json({ error: error.message })
   }
 }
 
