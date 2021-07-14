@@ -1,8 +1,6 @@
 const database = require('../../database')
 const CompanyModel = database.model('company')
 const MaintenanceOrderModel = database.model('maintenanceOrder')
-const MaintenanceOrderDriverModel = database.model('maintenanceOrderDriver')
-const DriverModel = database.model('driver')
 const { pathOr } = require('ramda')
 const Sequelize = require('sequelize')
 const { Op } = Sequelize
