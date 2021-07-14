@@ -44,11 +44,7 @@ const createCompany = async (req, res, next) => {
 
 const getById = async (req, res, next) => {
   try {
-    const response = await CompanyModel.findByPk(req.params.id, { 
-      include: [
-        { model: MaintenanceOrderModel, include: [ { model: MaintenanceOrderDriverModel, include: [DriverModel] }] }
-      ]
-    })
+    const response = await CompanyModel.findByPk(req.params.id)
     res.json(response)
   } catch (error) {
     res.status(404).json(error)

@@ -261,6 +261,20 @@ const getByPlate = async (req, res, next) => {
   }
 }
 
+const getAllCompanyId = async (req, res, next) => {
+  const limit = pathOr(20, ['query', 'limit'], req)
+  const offset = pathOr(0, ['query', 'offset'], req)
+  const companyId = pathOr(null, ['query', 'companyId'], req)
+
+  try {
+    const count = await MaintenanceOrderModel.count({ where: { companyId } })
+    const response = await MaintenanceOrderModel.findAndCountAll({ where: { companyId }, include: [CompanyModel, MaintenanceOrderEventModel, { model: MaintenanceOrderDriverModel, include: [DriverModel] }], offset, limit })
+    res.json({...response, count })
+  } catch (error) {
+    res.status(400).json({ error })
+  }
+}
+
 module.exports = {
   create,
   update,
@@ -272,4 +286,5 @@ module.exports = {
   getSummaryOrderByCompany,
   getSummaryOrderByOperation,
   getByPlate,
+  getAllCompanyId,
 }
