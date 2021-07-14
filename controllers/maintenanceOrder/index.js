@@ -122,7 +122,6 @@ const createEventToMaintenanceOrder =  async (req, res, next) => {
   let payload = pathOr({}, ['body'], req)
 
   try { 
-    const findDriver = await DriverModel.findByPk(driverId)
     const response = await MaintenanceOrderModel.findByPk(maintenanceOrderId, { include: [MaintenanceOrderEventModel, SupplyModel, { model: MaintenanceOrderDriverModel, include:[DriverModel]}], transaction })
     const eventsCreated = await MaintenanceOrderEventModel.count({ where: { status, maintenanceOrderId }})
     
@@ -131,7 +130,7 @@ const createEventToMaintenanceOrder =  async (req, res, next) => {
     }
     
     await MaintenanceOrderEventModel.create({ userId, companyId, maintenanceOrderId, status }, { transaction })
-    const driverIsMatch = findDriver && findDriver.find(driver => driver.id === findDriver.id) 
+    const driverIsMatch = response && response.maintenanceOrderDrivers.find(driver => driver.id === driverId) 
     if (status === 'check-out' && !driverIsMatch) {
       await MaintenanceOrderDriverModel.create({ maintenanceOrderId: payload.id, driverId: req.body.driverId }, { transaction })
     }
