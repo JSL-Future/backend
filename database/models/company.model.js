@@ -47,6 +47,14 @@ const Company = (sequelize) => {
     },
   })
 
+  Company.associate = (models) => {
+    models.maintenanceOrder.hasMany(models.maintenanceOrder, {
+      foreignKey: {
+        allowNull: false,
+      }
+    })
+  }
+
   return Company
 }
 

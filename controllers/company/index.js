@@ -1,5 +1,8 @@
 const database = require('../../database')
 const CompanyModel = database.model('company')
+const MaintenanceOrderModel = database.model('maintenanceOrder')
+const MaintenanceOrderDriverModel = database.model('maintenanceOrderDriver')
+const DriverModel = database.model('driver')
 const { pathOr } = require('ramda')
 const Sequelize = require('sequelize')
 const { Op } = Sequelize
@@ -41,7 +44,12 @@ const createCompany = async (req, res, next) => {
 
 const getById = async (req, res, next) => {
   try {
-    const response = await CompanyModel.findByPk(req.params.id)
+    const response = await CompanyModel.findByPk(req.params.id, { 
+      include: [
+        MaintenanceOrderModel,
+        { model: MaintenanceOrderDriverModel, include: [DriverModel]}
+      ]
+    })
     res.json(response)
   } catch (error) {
     res.status(404).json(error)
@@ -59,9 +67,35 @@ const update = async (req, res, next) => {
   }
 }
 
+const getSummaryOrders = async (req, res, next) => {
+  const companyId = pathOr(null, ['params', 'id'], req)
+
+  try {
+    const response = await MaintenanceOrderModel.findAll({ 
+      where: { companyId },
+      attributes: [
+        'status',
+        [
+          Sequelize.fn('date_trunc', 'day', Sequelize.col('createdAt')),
+          'name'
+        ],
+        [Sequelize.fn('COUNT', Sequelize.col('createdAt')), 'count']
+      ],
+      group: [
+        Sequelize.fn('date_trunc', 'day', Sequelize.col('createdAt')),
+        'status'
+      ],
+    })
+    res.json(response)
+  } catch (error) {
+    res.status(400).json({ error: error.message })
+  }
+}
+
 module.exports = {
   getAll,
   getById,
   createCompany,
-  update
+  update,
+  getSummaryOrders
 }
