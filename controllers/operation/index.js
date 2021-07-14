@@ -2,6 +2,7 @@ const { pathOr } = require('ramda')
 const database = require('../../database')
 const OperationModel = database.model('operation')
 const CompanyModel = database.model('company')
+const MaintenanceOrderModel = database.model('maintenanceOrder')
 
 const Sequelize = require('sequelize')
 const { Op } = Sequelize
@@ -58,9 +59,34 @@ const getAll = async (req, res, next) => {
   }
 }
 
+const getSummaryOperations = async (req, res, next) => {
+  const operationId = pathOr(null, ['params', 'id'], req)
+  try {
+    const response = await MaintenanceOrderModel.findAll({ 
+      where: { operationId },
+      attributes: [
+        'status',
+        [
+          Sequelize.fn('date_trunc', 'day', Sequelize.col('createdAt')),
+          'name'
+        ],
+        [Sequelize.fn('COUNT', Sequelize.col('createdAt')), 'count']
+      ],
+      group: [
+        Sequelize.fn('date_trunc', 'day', Sequelize.col('createdAt')),
+        'status'
+      ],
+    })
+    res.json(response)
+  } catch (error) {
+    res.status(400).json({ error: error.message })
+  }
+}
+
 module.exports = {
   create,
   update,
   getById,
   getAll,
+  getSummaryOperations,
 }
