@@ -175,13 +175,13 @@ const getSummaryOrderByStatus = async (req, res, next) => {
       attributes: [
         'status',
         [
-          Sequelize.fn('date_trunc', 'day', Sequelize.col('createdAt')),
+          Sequelize.fn('date_trunc', 'day', Sequelize.col('maintenanceDate')),
           'name'
         ],
-        [Sequelize.fn('COUNT', Sequelize.col('createdAt')), 'count']
+        [Sequelize.fn('COUNT', Sequelize.col('maintenanceDate')), 'count']
       ],
       group: [
-        Sequelize.fn('date_trunc', 'day', Sequelize.col('createdAt')),
+        Sequelize.fn('date_trunc', 'day', Sequelize.col('maintenanceDate')),
         'status'
       ],
     })
@@ -198,13 +198,13 @@ const getSummaryOrderByCompany = async (req, res, next) => {
       attributes: [
         'status',
         [
-          Sequelize.fn('date_trunc', 'day', Sequelize.col('maintenanceOrder.createdAt')),
+          Sequelize.fn('date_trunc', 'day', Sequelize.col('maintenanceOrder.maintenanceDate')),
           'name'
         ],
-        [Sequelize.fn('COUNT', Sequelize.col('maintenanceOrder.createdAt')), 'count']
+        [Sequelize.fn('COUNT', Sequelize.col('maintenanceOrder.maintenanceDate')), 'count']
       ],
       group: [
-        Sequelize.fn('date_trunc', 'day', Sequelize.col('maintenanceOrder.createdAt')),
+        Sequelize.fn('date_trunc', 'day', Sequelize.col('maintenanceOrder.maintenanceDate')),
         'status',
         'company.id'
       ],
@@ -222,13 +222,13 @@ const getSummaryOrderByOperation = async (req, res, next) => {
       attributes: [
         'status',
         [
-          Sequelize.fn('date_trunc', 'day', Sequelize.col('maintenanceOrder.createdAt')),
+          Sequelize.fn('date_trunc', 'day', Sequelize.col('maintenanceOrder.maintenanceDate')),
           'name'
         ],
-        [Sequelize.fn('COUNT', Sequelize.col('maintenanceOrder.createdAt')), 'count']
+        [Sequelize.fn('COUNT', Sequelize.col('maintenanceOrder.maintenanceDate')), 'count']
       ],
       group: [
-        Sequelize.fn('date_trunc', 'day', Sequelize.col('maintenanceOrder.createdAt')),
+        Sequelize.fn('date_trunc', 'day', Sequelize.col('maintenanceOrder.maintenanceDate')),
         'status',
         'operation.id',
         'operation.company.id'
