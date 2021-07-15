@@ -15,7 +15,7 @@ const authentication = async (req, res, next) => {
     throw new Error('Username or password do not match')
   }
 
-  const token = jwt.sign({ user }, secret, { expiresIn: '24h'})
+  const token = jwt.sign({ user }, secret, { expiresIn: '96h'})
   res.json({ user, token })
 
  } catch (error) {

@@ -105,7 +105,17 @@ const getAll = async (req, res, next) => {
 
   try {
     const count = await MaintenanceOrderModel.count({ where })
-    const response = await MaintenanceOrderModel.findAndCountAll({ where, include: [CompanyModel, MaintenanceOrderEventModel, { model: MaintenanceOrderDriverModel, include: [DriverModel] }], offset, limit })
+    const response = await MaintenanceOrderModel.findAndCountAll({ 
+      where, 
+      include: [
+        CompanyModel, 
+        MaintenanceOrderEventModel, { model: MaintenanceOrderDriverModel, include: [DriverModel] }], 
+        offset, 
+        limit,
+        order: [
+          ['maintenanceDate', 'ASC'],
+        ]
+      })
     res.json({...response, count })
   } catch (error) {
     res.status(400).json({ error })
