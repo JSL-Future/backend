@@ -135,6 +135,10 @@ const createEventToMaintenanceOrder =  async (req, res, next) => {
     const response = await MaintenanceOrderModel.findByPk(maintenanceOrderId, { include: [MaintenanceOrderEventModel, SupplyModel, { model: MaintenanceOrderDriverModel, include:[DriverModel]}], transaction })
     const eventsCreated = await MaintenanceOrderEventModel.count({ where: { status, maintenanceOrderId }})
     
+    if (response.status === 'check-out') {
+      throw new Error('Order finished, you cant set other state!')
+    }
+
     if (eventsCreated === statusQuantityAllow[status]) {
       throw new Error(`Allow only ${statusQuantityAllow[status]} to the event ${status}`)
     }
