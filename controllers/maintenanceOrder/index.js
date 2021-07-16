@@ -139,7 +139,7 @@ const createEventToMaintenanceOrder =  async (req, res, next) => {
       throw new Error('Order finished, you cant set other state!')
     }
 
-    if (eventsCreated === statusQuantityAllow[status]) {
+    if (eventsCreated === statusQuantityAllow[status] && response.status !== 'check-out') {
       throw new Error(`Allow only ${statusQuantityAllow[status]} to the event ${status}`)
     }
     
