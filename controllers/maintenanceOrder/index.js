@@ -110,7 +110,7 @@ const getAll = async (req, res, next) => {
       include: [
         CompanyModel, 
         MaintenanceOrderEventModel, { model: MaintenanceOrderDriverModel, include: [DriverModel] }], 
-        offset, 
+        offset: (offset * limit), 
         limit,
         order: [
           ['maintenanceDate', 'ASC'],
